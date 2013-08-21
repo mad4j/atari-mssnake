@@ -14,7 +14,7 @@
     set romsize 32kSC
 
     ; TODO: verify if needed
-    ;set smartbranching on
+    set smartbranching on
     
     ; remove horizontal scan lines
     set kernel_options no_blank_lines
@@ -124,33 +124,11 @@ ____Game_Init
 
 ____Title_Screen_Setup
 
-    playfield:
-    .XXXXXX.XXXXXX.XXXXXXXXXX.XXXXX.
-    .XX.....XX..XX.XX..XX..XX.XX....
-    .XX.XXX.XXXXXX.XX..XX..XX.XXXX..
-    .XX..XX.XX..XX.XX..XX..XX.XX....
-    .XXXXXX.XX..XX.XX..XX..XX.XXXXX.
-    ................................
-    ..XXXXXX.XX.XXXXXX.XX....XXXXX..
-    ....XX...XX...XX...XX....XX.....
-    ....XX...XX...XX...XX....XXXX...
-    ....XX...XX...XX...XX....XX.....
-    ....XX...XX...XX...XXXXX.XXXXX..
-    ................................
-    ................................
-    ................................
-    ................................
-    ................................
-    ................................
-    ................................
-    ................................
-    ................................
-    ................................
-    ................................
-    ................................
-    ................................
-end
+    scorecolor = $2C
 
+    player0x = 0
+    player0y = 0
+    
     ; debounce the reset switch
     _Bit0_Debounce_Reset{0} = 1
 
@@ -164,15 +142,17 @@ end
 
 ____Title_Screen_Loop
 
+    gosub titledrawscreen bank4
+
     ; set correct color values in main loop
-    COLUPF = $DC
-    COLUBK = $00
+    ;COLUPF = $DC
+    ;COLUBK = $00
 
     ; rationale
     ; pluggable mini-kernels should modify pre-configured colors
 
     ; static visualization: nothing else to do
-    drawscreen
+    ;drawscreen
 
     ; no button pressed then clear debounce bit
     if !switchreset && !joy0fire then _Bit0_Debounce_Reset{0} = 0 : goto ____Skip_Title_Reset_Fire
@@ -202,10 +182,10 @@ ____Skip_Title_Reset_Fire
 
 ____Main_Loop_Setup
 
-    ; reset bouncing bite
-    _Bit2_Game_Over{2} = 0
+    ; reset bouncing bits
     _Bit0_Debounce_Reset{0} = 1
     _Bit1_Debounce_FireB{1} = 1
+    _Bit2_Game_Over{2} = 0
 
     ; deactivate sounds
     eat_sound=0
@@ -232,7 +212,7 @@ ____Main_Loop_Setup
     directions[tailStart] = headDir
 
     score = 0
-    scorecolor = $2C
+
 
     ; initial ms-snake speed (one step every 'speed' frames)
     speed = 0
@@ -247,7 +227,35 @@ ____Main_Loop_Setup
     pfvline 0 1 21 on
     pfvline 31 1 21 on
 
+    player0:
+    %01100000
+    %11110000
+    %11110000
+    %01100000
+    %00000000
+    %00000000
+    %00000000
+    %00000000
+end
+
+    player1:
+    %00000000
+    %00100100
+    %00100100
+    %00011000
+    %00011000
+    %00100100
+    %00100100
+    %00000000
+end
+
 ____Main_Loop
+
+    COLUP0 = $20
+    COLUP1 = $60
+
+    player1x = 25
+    player1y = 25
 
     _Bit1_Debounce_FireB{1} = 0
 
@@ -268,12 +276,8 @@ ____Main_Loop
 
 ____Skip_Main_Reset
 
-   rem  ****************************************************************
-   rem  *
-   rem  *  Checks to see if the game is over.
-   rem  `
-   if _Bit2_Game_Over{2} then goto ____Game_Over_Setup bank3
-
+    ; check to see if the game is over
+    if _Bit2_Game_Over{2} then goto ____Game_Over_Setup bank3
 
     COLUPF = $52
     COLUBK = $00
@@ -282,7 +286,7 @@ ____Skip_Main_Reset
     if grown=0 then pfpixel tailX tailY off
 
     if foodX=0 && foodY=0 then gosub update_food bank3
-    pfpixel foodX foodY on
+    ; pfpixel foodX foodY on
 
     if eat_sound=0 then goto ____Skip_Sound1
     AUDV0 = 8 : AUDC0 = 4 : AUDF0 = 19
@@ -298,8 +302,7 @@ ____Skip_Sound1
     if joy0up then headDir=NORTH
     if joy0down then headDir=SOUTH
     if joy0left then headDir=WEST
-    if joy0right then headDir=EAST
-
+    if joy0right then headDir=EAST    
 
     goto ____Main_Loop
 
@@ -315,7 +318,7 @@ update_snake
     
     if grown>0 then grown=grown-1 : length=length+1 else gosub update_tail
 
-    speed = (MAX_LEN-length)/16
+    speed = (MAX_LEN-length)/32
 
     gosub update_head
 
@@ -368,10 +371,22 @@ update_tail
     return
 
 update_food
-    foodX = (rand&30)+1
-    foodY = (rand&20)+1
 
-    if pfread(foodX,foodY) then update_food
+    ; new food position
+    foodX = (rand&31)
+    foodY = (rand&23)
+    
+    ; last playfield line is not visible
+    if foodY = 23 then goto update_food
+
+    ; check if (foodX, foodY) is free
+    if pfread(foodX,foodY) then goto update_food
+
+    temp5 = foodX*4+17
+    player0x = temp5
+
+    temp5 = foodY*4+4
+    player0y = temp5
 
     return
 
@@ -432,6 +447,9 @@ ____Game_Over_Setup
     ................................
 end
 
+    player0x = 0
+    player0y = 0
+
     ; debounce the reset switch.
     _Bit0_Debounce_Reset{0} = 1
     
@@ -476,7 +494,7 @@ ____Skip_Shake
    rem  `  If _Frame_Counter reaches 10 (20 seconds), the program resets
    rem  `  and goes to the title screen.
    rem  `
-   if _Frame_Counter = 10 then _Bit2_Game_Over{2} = 0 : goto ____Game_Init bank1
+   if _Frame_Counter = 5 then _Bit2_Game_Over{2} = 0 : goto ____Game_Init bank1
 
 
 __Skip_20_Counter
@@ -497,6 +515,10 @@ ____Skip_Game_Over_Reset
 
 
     bank 4
+
+    asm
+    include "titlescreen/asm/titlescreen.asm"
+end
 
     bank 5
 

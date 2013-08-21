@@ -1,4 +1,4 @@
-ms-snake
-========
+ms-snake!
+=========
 
-Ms Snake! cute game for the Atari 2600
+ms-snake! a cute game for the Atari 2600

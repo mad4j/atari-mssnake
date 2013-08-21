@@ -238,24 +238,10 @@ ____Main_Loop_Setup
     %00000000
 end
 
-    player1:
-    %00000000
-    %00100100
-    %00100100
-    %00011000
-    %00011000
-    %00100100
-    %00100100
-    %00000000
-end
-
 ____Main_Loop
 
     COLUP0 = $20
     COLUP1 = $60
-
-    player1x = 25
-    player1y = 25
 
     _Bit1_Debounce_FireB{1} = 0
 

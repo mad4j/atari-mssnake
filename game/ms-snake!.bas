@@ -42,10 +42,10 @@
     const MAX_LEN = 192
 
     ; all-purpose bits for various jobs
-    dim _BitOp_All_Purpose_01 = z
-    dim _Bit0_Debounce_Reset = z
-    dim _Bit1_Debounce_FireB = z
-    dim _Bit2_Game_Over = z
+    dim bits = z
+    dim bits0_DebounceReset = z
+    dim bits1_DebounceFireButton = z
+    dim bits2_GameOverFlag = z
 
     dim _Master_Counter = s
     dim _Frame_Counter = c
@@ -111,15 +111,15 @@ _GameInit
     for temp5 = 0 to 24 : a[temp5] = 0 : next
 
     ; clear 7 of the 8 All_Purpose_01 bits
-    ; bit 2 is not cleared because _Bit2_Game_Over{2}
+    ; bit 2 is not cleared because bits2_GameOverFlag{2}
     ; is used to control how the program is reset.
-    _BitOp_All_Purpose_01 = _BitOp_All_Purpose_01 & %00000100
+    bits = bits & %00000100
 
     ; TODO: clear also SC registers!
 
     ; skip title screen if game has been played and player
     ; presses fire button or reset switch at the end of the game
-    if _Bit2_Game_Over{2} then goto _MainLoopSetup bank2
+    if bits2_GameOverFlag{2} then goto _MainLoopSetup bank2
 
 
 _TitleScreenSetup
@@ -130,7 +130,7 @@ _TitleScreenSetup
     player0y = 0
     
     ; debounce the reset switch
-    _Bit0_Debounce_Reset{0} = 1
+    bits0_DebounceReset{0} = 1
 
     ; rationale:
     ; the reset switch becomes inactive if it hasn't been
@@ -155,10 +155,10 @@ _TitleScreenLoop
     ;drawscreen
 
     ; no button pressed then clear debounce bit
-    if !switchreset && !joy0fire then _Bit0_Debounce_Reset{0} = 0 : goto _SkipTitleResetFire
+    if !switchreset && !joy0fire then bits0_DebounceReset{0} = 0 : goto _SkipTitleResetFire
 
     ; debounce bit active, then remain on the title screen
-    if _Bit0_Debounce_Reset{0} then goto _SkipTitleResetFire
+    if bits0_DebounceReset{0} then goto _SkipTitleResetFire
 
     ; button pressed and debounce bit deactivated, then start the game
     goto _MainLoopSetup bank2
@@ -183,9 +183,9 @@ _SkipTitleResetFire
 _MainLoopSetup
 
     ; reset bouncing bits
-    _Bit0_Debounce_Reset{0} = 1
-    _Bit1_Debounce_FireB{1} = 1
-    _Bit2_Game_Over{2} = 0
+    bits0_DebounceReset{0} = 1
+    bits1_DebounceFireButton{1} = 1
+    bits2_GameOverFlag{2} = 0
 
     ; deactivate sounds
     eat_sound=0
@@ -243,18 +243,18 @@ _MainLoop
     COLUP0 = $20
     COLUP1 = $60
 
-    _Bit1_Debounce_FireB{1} = 0
+    bits1_DebounceFireButton{1} = 0
 
     drawscreen
 
     ; if the reset switch is not pressed, turn off debounce and skip this section
-    if !switchreset then _Bit0_Debounce_Reset{0} = 0 : goto _SkipMainReset
+    if !switchreset then bits0_DebounceReset{0} = 0 : goto _SkipMainReset
 
     ; if the reset switch hasn`t been released, skip this section
-    if _Bit0_Debounce_Reset{0} then goto _SkipMainReset
+    if bits0_DebounceReset{0} then goto _SkipMainReset
 
     ; clear the game over bit so the title screen will appear
-    _Bit2_Game_Over{2} = 0
+    bits2_GameOverFlag{2} = 0
 
     ; reset pressed appropriately. Restart the program.
     goto _GameInit bank1
@@ -263,7 +263,7 @@ _MainLoop
 _SkipMainReset
 
     ; check to see if the game is over
-    if _Bit2_Game_Over{2} then goto _GameOverSetup bank3
+    if bits2_GameOverFlag{2} then goto _GameOverSetup bank3
 
     COLUPF = $52
     COLUBK = $00
@@ -334,7 +334,7 @@ _UpdateHead
     directions[temp1] = directions[temp1] | temp3
 
     if headX=foodX && headY=foodY then goto _SkipCollisionCheck
-    if pfread(headX, headY) then _Bit2_Game_Over{2} = 1
+    if pfread(headX, headY) then bits2_GameOverFlag{2} = 1
 
 _SkipCollisionCheck
     return
@@ -437,7 +437,7 @@ end
     player0y = 0
 
     ; debounce the reset switch.
-    _Bit0_Debounce_Reset{0} = 1
+    bits0_DebounceReset{0} = 1
     
     ; activate crash sound
     crash_sound=8
@@ -480,7 +480,7 @@ _SkipShake
    rem  `  If _Frame_Counter reaches 10 (20 seconds), the program resets
    rem  `  and goes to the title screen.
    rem  `
-   if _Frame_Counter = 5 then _Bit2_Game_Over{2} = 0 : goto _GameInit bank1
+   if _Frame_Counter = 5 then bits2_GameOverFlag{2} = 0 : goto _GameInit bank1
 
 
 _Skip20Counter
@@ -488,9 +488,9 @@ _Skip20Counter
 
     drawscreen
 
-    if !switchreset && !joy0fire then _Bit0_Debounce_Reset{0} = 0 : goto _SkipGameOverReset
+    if !switchreset && !joy0fire then bits0_DebounceReset{0} = 0 : goto _SkipGameOverReset
 
-    if _Bit0_Debounce_Reset{0} then goto _SkipGameOverReset
+    if bits0_DebounceReset{0} then goto _SkipGameOverReset
 
     goto _GameInit bank1
 

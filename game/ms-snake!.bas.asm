@@ -53,13 +53,13 @@ game
 
 .L011 ;  const MAX_LEN  =  192
 
-.L012 ;  dim _BitOp_All_Purpose_01  =  z
+.L012 ;  dim bits  =  z
 
-.L013 ;  dim _Bit0_Debounce_Reset  =  z
+.L013 ;  dim bits0_DebounceReset  =  z
 
-.L014 ;  dim _Bit1_Debounce_FireB  =  z
+.L014 ;  dim bits1_DebounceFireButton  =  z
 
-.L015 ;  dim _Bit2_Game_Over  =  z
+.L015 ;  dim bits2_GameOverFlag  =  z
 
 .
  ; 
@@ -163,17 +163,17 @@ game
 .
  ; 
 
-.L038 ;  _BitOp_All_Purpose_01  =  _BitOp_All_Purpose_01  &  %00000100
+.L038 ;  bits  =  bits  &  %00000100
 
-	LDA _BitOp_All_Purpose_01
+	LDA bits
 	AND #%00000100
-	STA _BitOp_All_Purpose_01
+	STA bits
 .
  ; 
 
-.L039 ;  if _Bit2_Game_Over{2} then goto _MainLoopSetup bank2
+.L039 ;  if bits2_GameOverFlag{2} then goto _MainLoopSetup bank2
 
-	LDA _Bit2_Game_Over
+	LDA bits2_GameOverFlag
 	AND #4
 	BEQ .skipL039
 .condpart0
@@ -216,11 +216,11 @@ game
 
 	LDA #0
 	STA player0y
-.L043 ;  _Bit0_Debounce_Reset{0}  =  1
+.L043 ;  bits0_DebounceReset{0}  =  1
 
-	LDA _Bit0_Debounce_Reset
+	LDA bits0_DebounceReset
 	ORA #1
-	STA _Bit0_Debounce_Reset
+	STA bits0_DebounceReset
 .
  ; 
 
@@ -278,7 +278,7 @@ ret_point1
 .
  ; 
 
-.L045 ;  if !switchreset  &&  !joy0fire then _Bit0_Debounce_Reset{0}  =  0  :  goto _SkipTitleResetFire
+.L045 ;  if !switchreset  &&  !joy0fire then bits0_DebounceReset{0}  =  0  :  goto _SkipTitleResetFire
 
  lda #1
  bit SWCHB
@@ -287,16 +287,16 @@ ret_point1
  bit INPT4
 	BPL .skip1then
 .condpart2
-	LDA _Bit0_Debounce_Reset
+	LDA bits0_DebounceReset
 	AND #254
-	STA _Bit0_Debounce_Reset
+	STA bits0_DebounceReset
  jmp ._SkipTitleResetFire
 
 .skip1then
 .skipL045
-.L046 ;  if _Bit0_Debounce_Reset{0} then goto _SkipTitleResetFire
+.L046 ;  if bits0_DebounceReset{0} then goto _SkipTitleResetFire
 
-	LDA _Bit0_Debounce_Reset
+	LDA bits0_DebounceReset
 	LSR
 	BCC .skipL046
 .condpart3
@@ -391,21 +391,21 @@ start_bank1 ldx #$ff
 ._MainLoopSetup
  ; _MainLoopSetup
 
-.L050 ;  _Bit0_Debounce_Reset{0}  =  1
+.L050 ;  bits0_DebounceReset{0}  =  1
 
-	LDA _Bit0_Debounce_Reset
+	LDA bits0_DebounceReset
 	ORA #1
-	STA _Bit0_Debounce_Reset
-.L051 ;  _Bit1_Debounce_FireB{1}  =  1
+	STA bits0_DebounceReset
+.L051 ;  bits1_DebounceFireButton{1}  =  1
 
-	LDA _Bit1_Debounce_FireB
+	LDA bits1_DebounceFireButton
 	ORA #2
-	STA _Bit1_Debounce_FireB
-.L052 ;  _Bit2_Game_Over{2}  =  0
+	STA bits1_DebounceFireButton
+.L052 ;  bits2_GameOverFlag{2}  =  0
 
-	LDA _Bit2_Game_Over
+	LDA bits2_GameOverFlag
 	AND #251
-	STA _Bit2_Game_Over
+	STA bits2_GameOverFlag
 .L053 ;  eat_sound = 0
 
 	LDA #0
@@ -624,11 +624,11 @@ ret_point6
 .
  ; 
 
-.L074 ;  _Bit1_Debounce_FireB{1}  =  0
+.L074 ;  bits1_DebounceFireButton{1}  =  0
 
-	LDA _Bit1_Debounce_FireB
+	LDA bits1_DebounceFireButton
 	AND #253
-	STA _Bit1_Debounce_FireB
+	STA bits1_DebounceFireButton
 .
  ; 
 
@@ -650,32 +650,32 @@ ret_point6
  ldx #8
  jmp BS_jsr
 ret_point7
-.L076 ;  if !switchreset then _Bit0_Debounce_Reset{0}  =  0  :  goto _SkipMainReset
+.L076 ;  if !switchreset then bits0_DebounceReset{0}  =  0  :  goto _SkipMainReset
 
  lda #1
  bit SWCHB
 	BEQ .skipL076
 .condpart4
-	LDA _Bit0_Debounce_Reset
+	LDA bits0_DebounceReset
 	AND #254
-	STA _Bit0_Debounce_Reset
+	STA bits0_DebounceReset
  jmp ._SkipMainReset
 
 .skipL076
-.L077 ;  if _Bit0_Debounce_Reset{0} then goto _SkipMainReset
+.L077 ;  if bits0_DebounceReset{0} then goto _SkipMainReset
 
-	LDA _Bit0_Debounce_Reset
+	LDA bits0_DebounceReset
 	LSR
 	BCC .skipL077
 .condpart5
  jmp ._SkipMainReset
 
 .skipL077
-.L078 ;  _Bit2_Game_Over{2}  =  0
+.L078 ;  bits2_GameOverFlag{2}  =  0
 
-	LDA _Bit2_Game_Over
+	LDA bits2_GameOverFlag
 	AND #251
-	STA _Bit2_Game_Over
+	STA bits2_GameOverFlag
 .L079 ;  goto _GameInit bank1
 
  sta temp7
@@ -698,9 +698,9 @@ ret_point7
 ._SkipMainReset
  ; _SkipMainReset
 
-.L080 ;  if _Bit2_Game_Over{2} then goto _GameOverSetup bank3
+.L080 ;  if bits2_GameOverFlag{2} then goto _GameOverSetup bank3
 
-	LDA _Bit2_Game_Over
+	LDA bits2_GameOverFlag
 	AND #4
 	BEQ .skipL080
 .condpart6
@@ -1187,7 +1187,7 @@ MASKS
 
 .skip25then
 .skipL0116
-.L0117 ;  if pfread ( headX ,  headY )  then _Bit2_Game_Over{2}  =  1
+.L0117 ;  if pfread ( headX ,  headY )  then bits2_GameOverFlag{2}  =  1
 
 	LDA headX
 	LDY headY
@@ -1209,9 +1209,9 @@ MASKS
 ret_point13
 	BNE .skipL0117
 .condpart27
-	LDA _Bit2_Game_Over
+	LDA bits2_GameOverFlag
 	ORA #4
-	STA _Bit2_Game_Over
+	STA bits2_GameOverFlag
 .skipL0117
 .
  ; 
@@ -1611,11 +1611,11 @@ pflabel0
 
 	LDA #0
 	STA player0y
-.L0153 ;  _Bit0_Debounce_Reset{0}  =  1
+.L0153 ;  bits0_DebounceReset{0}  =  1
 
-	LDA _Bit0_Debounce_Reset
+	LDA bits0_DebounceReset
 	ORA #1
-	STA _Bit0_Debounce_Reset
+	STA bits0_DebounceReset
 .L0154 ;  crash_sound = 8
 
 	LDA #8
@@ -1756,15 +1756,15 @@ pflabel0
 
 .L0178 ;  rem  `
 
-.L0179 ;  if _Frame_Counter  =  5 then _Bit2_Game_Over{2}  =  0  :  goto _GameInit bank1
+.L0179 ;  if _Frame_Counter  =  5 then bits2_GameOverFlag{2}  =  0  :  goto _GameInit bank1
 
 	LDA _Frame_Counter
 	CMP #5
      BNE .skipL0179
 .condpart40
-	LDA _Bit2_Game_Over
+	LDA bits2_GameOverFlag
 	AND #251
-	STA _Bit2_Game_Over
+	STA bits2_GameOverFlag
  sta temp7
  lda #>(._GameInit-1)
  pha
@@ -1813,7 +1813,7 @@ ret_point15
 .
  ; 
 
-.L0181 ;  if !switchreset  &&  !joy0fire then _Bit0_Debounce_Reset{0}  =  0  :  goto _SkipGameOverReset
+.L0181 ;  if !switchreset  &&  !joy0fire then bits0_DebounceReset{0}  =  0  :  goto _SkipGameOverReset
 
  lda #1
  bit SWCHB
@@ -1822,9 +1822,9 @@ ret_point15
  bit INPT4
 	BPL .skip41then
 .condpart42
-	LDA _Bit0_Debounce_Reset
+	LDA bits0_DebounceReset
 	AND #254
-	STA _Bit0_Debounce_Reset
+	STA bits0_DebounceReset
  jmp ._SkipGameOverReset
 
 .skip41then
@@ -1832,9 +1832,9 @@ ret_point15
 .
  ; 
 
-.L0182 ;  if _Bit0_Debounce_Reset{0} then goto _SkipGameOverReset
+.L0182 ;  if bits0_DebounceReset{0} then goto _SkipGameOverReset
 
-	LDA _Bit0_Debounce_Reset
+	LDA bits0_DebounceReset
 	LSR
 	BCC .skipL0182
 .condpart43

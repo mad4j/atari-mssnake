@@ -26,7 +26,7 @@
     ; random numbers can slow down bank-switched games.
     ; This will speed things up.
 
-    ; use 24 rows playfiled
+    ; use 24 rows playfiled (nearly square pixels)
     const pfres = 24
 
     ; use ALARMCLOCK font for score digits
@@ -185,6 +185,8 @@ _MainLoopSetup
     ; reset bouncing bits
     bits0_DebounceReset{0} = 1
     bits1_DebounceFireButton{1} = 1
+
+    ; reset game over flag
     bits2_GameOverFlag{2} = 0
 
     ; deactivate sounds
@@ -256,7 +258,7 @@ _MainLoop
     ; clear the game over bit so the title screen will appear
     bits2_GameOverFlag{2} = 0
 
-    ; reset pressed appropriately. Restart the program.
+    ; reset pressed appropriately: restart the program
     goto _GameInit bank1
 
 

@@ -105,9 +105,9 @@ game
 .
  ; 
 
-.L032 ;  dim eat_sound  =  f
+.L032 ;  dim eatSound  =  f
 
-.L033 ;  dim crash_sound  =  f
+.L033 ;  dim crashSound  =  f
 
 .
  ; 
@@ -388,58 +388,55 @@ start_bank1 ldx #$ff
 .
  ; 
 
-._MainLoopSetup
- ; _MainLoopSetup
-
-.L050 ;  bits0_DebounceReset{0}  =  1
+._MainLoopSetup ; _MainLoopSetup bits0_DebounceReset{0}  =  1
 
 	LDA bits0_DebounceReset
 	ORA #1
 	STA bits0_DebounceReset
-.L051 ;  bits1_DebounceFireButton{1}  =  1
+.L050 ;  bits1_DebounceFireButton{1}  =  1
 
 	LDA bits1_DebounceFireButton
 	ORA #2
 	STA bits1_DebounceFireButton
-.L052 ;  bits2_GameOverFlag{2}  =  0
+.L051 ;  bits2_GameOverFlag{2}  =  0
 
 	LDA bits2_GameOverFlag
 	AND #251
 	STA bits2_GameOverFlag
-.L053 ;  eat_sound = 0
+.L052 ;  eatSound = 0
 
 	LDA #0
-	STA eat_sound
-.L054 ;  crash_sound = 0
+	STA eatSound
+.L053 ;  crashSound = 0
 
 	LDA #0
-	STA crash_sound
-.L055 ;  foodX = 0  :  foodY = 0
+	STA crashSound
+.L054 ;  foodX = 0  :  foodY = 0
 
 	LDA #0
 	STA foodX
 	STA foodY
-.L056 ;  headX  =  5  :  headY  =  5
+.L055 ;  headX  =  5  :  headY  =  5
 
 	LDA #5
 	STA headX
 	STA headY
-.L057 ;  headDir  =  EAST
+.L056 ;  headDir  =  EAST
 
 	LDA #EAST
 	STA headDir
-.L058 ;  length = 1
+.L057 ;  length = 1
 
 	LDA #1
 	STA length
-.L059 ;  grown = 2
+.L058 ;  grown = 2
 
 	LDA #2
 	STA grown
 .
  ; 
 
-.L060 ;  tailStart  =  0  :  tailEnd  =  0
+.L059 ;  tailStart  =  0  :  tailEnd  =  0
 
 	LDA #0
 	STA tailStart
@@ -447,7 +444,7 @@ start_bank1 ldx #$ff
 .
  ; 
 
-.L061 ;  tailX  =  headX - 1  :  tailY  =  headY
+.L060 ;  tailX  =  headX - 1  :  tailY  =  headY
 
 	LDA headX
 	SEC
@@ -455,7 +452,7 @@ start_bank1 ldx #$ff
 	STA tailX
 	LDA headY
 	STA tailY
-.L062 ;  directions[tailStart]  =  headDir
+.L061 ;  directions[tailStart]  =  headDir
 
 	LDA headDir
 	LDX tailStart
@@ -463,7 +460,7 @@ start_bank1 ldx #$ff
 .
  ; 
 
-.L063 ;  score  =  0
+.L062 ;  score  =  0
 
 	LDA #$00
 	STA score+2
@@ -471,18 +468,15 @@ start_bank1 ldx #$ff
 	STA score+1
 	LDA #$00
 	STA score
-.
- ; 
-
-.L064 ;  speed  =  0
+.L063 ;  speed  =  0
 
 	LDA #0
 	STA speed
-.L065 ;  counter  =  0
+.L064 ;  counter  =  0
 
 	LDA #0
 	STA counter
-.L066 ;  pfclear
+.L065 ;  pfclear
 
 	LDA #0
  sta temp7
@@ -501,7 +495,7 @@ start_bank1 ldx #$ff
  ldx #8
  jmp BS_jsr
 ret_point2
-.L067 ;  pfhline 0 0 31 on
+.L066 ;  pfhline 0 0 31 on
 
 	LDA #31
 	STA temp3
@@ -524,7 +518,7 @@ ret_point2
  ldx #8
  jmp BS_jsr
 ret_point3
-.L068 ;  pfhline 0 22 31 on
+.L067 ;  pfhline 0 22 31 on
 
 	LDA #31
 	STA temp3
@@ -547,7 +541,7 @@ ret_point3
  ldx #8
  jmp BS_jsr
 ret_point4
-.L069 ;  pfvline 0 1 21 on
+.L068 ;  pfvline 0 1 21 on
 
 	LDA #21
 	STA temp3
@@ -570,7 +564,7 @@ ret_point4
  ldx #8
  jmp BS_jsr
 ret_point5
-.L070 ;  pfvline 31 1 21 on
+.L069 ;  pfvline 31 1 21 on
 
 	LDA #21
 	STA temp3
@@ -596,11 +590,11 @@ ret_point6
 .
  ; 
 
-.L071 ;  player0:
+.L070 ;  player0:
 
-	LDA #<playerL071_0
+	LDA #<playerL070_0
 	STA player0pointerlo
-	LDA #>playerL071_0
+	LDA #>playerL070_0
 	STA player0pointerhi
 	LDA #7
 	STA player0height
@@ -613,18 +607,14 @@ ret_point6
 .
  ; 
 
-.L072 ;  COLUP0  =  $20
+.L071 ;  COLUP0  =  $20
 
 	LDA #$20
 	STA COLUP0
-.L073 ;  COLUP1  =  $60
-
-	LDA #$60
-	STA COLUP1
 .
  ; 
 
-.L074 ;  bits1_DebounceFireButton{1}  =  0
+.L072 ;  bits1_DebounceFireButton{1}  =  0
 
 	LDA bits1_DebounceFireButton
 	AND #253
@@ -632,7 +622,7 @@ ret_point6
 .
  ; 
 
-.L075 ;  drawscreen
+.L073 ;  drawscreen
 
  sta temp7
  lda #>(ret_point7-1)
@@ -650,33 +640,33 @@ ret_point6
  ldx #8
  jmp BS_jsr
 ret_point7
-.L076 ;  if !switchreset then bits0_DebounceReset{0}  =  0  :  goto _SkipMainReset
+.L074 ;  if !switchreset then bits0_DebounceReset{0}  =  0  :  goto _SkipMainReset
 
  lda #1
  bit SWCHB
-	BEQ .skipL076
+	BEQ .skipL074
 .condpart4
 	LDA bits0_DebounceReset
 	AND #254
 	STA bits0_DebounceReset
  jmp ._SkipMainReset
 
-.skipL076
-.L077 ;  if bits0_DebounceReset{0} then goto _SkipMainReset
+.skipL074
+.L075 ;  if bits0_DebounceReset{0} then goto _SkipMainReset
 
 	LDA bits0_DebounceReset
 	LSR
-	BCC .skipL077
+	BCC .skipL075
 .condpart5
  jmp ._SkipMainReset
 
-.skipL077
-.L078 ;  bits2_GameOverFlag{2}  =  0
+.skipL075
+.L076 ;  bits2_GameOverFlag{2}  =  0
 
 	LDA bits2_GameOverFlag
 	AND #251
 	STA bits2_GameOverFlag
-.L079 ;  goto _GameInit bank1
+.L077 ;  goto _GameInit bank1
 
  sta temp7
  lda #>(._GameInit-1)
@@ -698,11 +688,11 @@ ret_point7
 ._SkipMainReset
  ; _SkipMainReset
 
-.L080 ;  if bits2_GameOverFlag{2} then goto _GameOverSetup bank3
+.L078 ;  if bits2_GameOverFlag{2} then goto _GameOverSetup bank3
 
 	LDA bits2_GameOverFlag
 	AND #4
-	BEQ .skipL080
+	BEQ .skipL078
 .condpart6
  sta temp7
  lda #>(._GameOverSetup-1)
@@ -715,22 +705,22 @@ ret_point7
  pha
  ldx #3
  jmp BS_jsr
-.skipL080
+.skipL078
 .
  ; 
 
-.L081 ;  COLUPF  =  $52
+.L079 ;  COLUPF  =  $52
 
 	LDA #$52
 	STA COLUPF
-.L082 ;  COLUBK  =  $00
+.L080 ;  COLUBK  =  $00
 
 	LDA #$00
 	STA COLUBK
 .
  ; 
 
-.L083 ;  pfpixel headX headY on
+.L081 ;  pfpixel headX headY on
 
 	LDA headX
 	LDY headY
@@ -751,11 +741,11 @@ ret_point7
  ldx #8
  jmp BS_jsr
 ret_point8
-.L084 ;  if grown = 0 then pfpixel tailX tailY off
+.L082 ;  if grown = 0 then pfpixel tailX tailY off
 
 	LDA grown
 	CMP #0
-     BNE .skipL084
+     BNE .skipL082
 .condpart7
 	LDA tailX
 	LDY tailY
@@ -776,15 +766,15 @@ ret_point8
  ldx #8
  jmp BS_jsr
 ret_point9
-.skipL084
+.skipL082
 .
  ; 
 
-.L085 ;  if foodX = 0  &&  foodY = 0 then gosub _UpdateFood bank3
+.L083 ;  if foodX = 0  &&  foodY = 0 then gosub _UpdateFood bank3
 
 	LDA foodX
 	CMP #0
-     BNE .skipL085
+     BNE .skipL083
 .condpart8
 	LDA foodY
 	CMP #0
@@ -807,17 +797,17 @@ ret_point9
  jmp BS_jsr
 ret_point10
 .skip8then
-.skipL085
-.L086 ;  if eat_sound = 0 then goto _SkipSound1
+.skipL083
+.L084 ;  if eatSound = 0 then goto _SkipSound1
 
-	LDA eat_sound
+	LDA eatSound
 	CMP #0
-     BNE .skipL086
+     BNE .skipL084
 .condpart10
  jmp ._SkipSound1
 
-.skipL086
-.L087 ;  AUDV0  =  8  :  AUDC0  =  4  :  AUDF0  =  19
+.skipL084
+.L085 ;  AUDV0  =  8  :  AUDC0  =  4  :  AUDF0  =  19
 
 	LDA #8
 	STA AUDV0
@@ -825,31 +815,31 @@ ret_point10
 	STA AUDC0
 	LDA #19
 	STA AUDF0
-.L088 ;  eat_sound  =  eat_sound - 1
+.L086 ;  eatSound  =  eatSound - 1
 
-	DEC eat_sound
+	DEC eatSound
 ._SkipSound1
  ; _SkipSound1
 
-.L089 ;  if !eat_sound then AUDV0  =  0
+.L087 ;  if !eatSound then AUDV0  =  0
 
-	LDA eat_sound
-	BNE .skipL089
+	LDA eatSound
+	BNE .skipL087
 .condpart11
 	LDA #0
 	STA AUDV0
-.skipL089
+.skipL087
 .
  ; 
 
-.L090 ;  counter  =  counter + 1
+.L088 ;  counter  =  counter + 1
 
 	INC counter
-.L091 ;  if counter  >  speed then gosub _UpdateSnake bank3
+.L089 ;  if counter  >  speed then gosub _UpdateSnake bank3
 
 	LDA speed
 	CMP counter
-     BCS .skipL091
+     BCS .skipL089
 .condpart12
  sta temp7
  lda #>(ret_point11-1)
@@ -867,15 +857,15 @@ ret_point10
  ldx #3
  jmp BS_jsr
 ret_point11
-.skipL091
+.skipL089
 .
  ; 
 
-.L092 ;  if headX = foodX  &&  headY = foodY then gosub _UpdateEat bank3
+.L090 ;  if headX = foodX  &&  headY = foodY then gosub _UpdateEat bank3
 
 	LDA headX
 	CMP foodX
-     BNE .skipL092
+     BNE .skipL090
 .condpart13
 	LDA headY
 	CMP foodY
@@ -898,48 +888,48 @@ ret_point11
  jmp BS_jsr
 ret_point12
 .skip13then
-.skipL092
+.skipL090
 .
  ; 
 
-.L093 ;  if joy0up then headDir = NORTH
+.L091 ;  if joy0up then headDir = NORTH
 
  lda #$10
  bit SWCHA
-	BNE .skipL093
+	BNE .skipL091
 .condpart15
 	LDA #NORTH
 	STA headDir
-.skipL093
-.L094 ;  if joy0down then headDir = SOUTH
+.skipL091
+.L092 ;  if joy0down then headDir = SOUTH
 
  lda #$20
  bit SWCHA
-	BNE .skipL094
+	BNE .skipL092
 .condpart16
 	LDA #SOUTH
 	STA headDir
-.skipL094
-.L095 ;  if joy0left then headDir = WEST
+.skipL092
+.L093 ;  if joy0left then headDir = WEST
 
  bit SWCHA
-	BVS .skipL095
+	BVS .skipL093
 .condpart17
 	LDA #WEST
 	STA headDir
-.skipL095
-.L096 ;  if joy0right then headDir = EAST
+.skipL093
+.L094 ;  if joy0right then headDir = EAST
 
  bit SWCHA
-	BMI .skipL096
+	BMI .skipL094
 .condpart18
 	LDA #EAST
 	STA headDir
-.skipL096
+.skipL094
 .
  ; 
 
-.L097 ;  goto _MainLoop
+.L095 ;  goto _MainLoop
 
  jmp ._MainLoop
 
@@ -949,7 +939,10 @@ ret_point12
 .
  ; 
 
-.L098 ;  bank 3
+.
+ ; 
+
+.L096 ;  bank 3
 
  echo "    ",[(start_bank2 - *)]d , "bytes of ROM space left in bank 2")
  ORG $2FF4-bscode_length
@@ -996,43 +989,43 @@ start_bank2 ldx #$ff
 .
  ; 
 
-.L099 ;  data MASKS
+.L097 ;  data MASKS
 
-	JMP .skipL099
+	JMP .skipL097
 MASKS
 	.byte     %00000011, %00001100, %00110000, %11000000
 
-.skipL099
+.skipL097
 .
  ; 
 
 ._UpdateSnake
  ; _UpdateSnake
 
-.L0100 ;  counter = 0
+.L098 ;  counter = 0
 
 	LDA #0
 	STA counter
 .
  ; 
 
-.L0101 ;  if grown > 0 then grown = grown - 1  :  length = length + 1 else gosub _UpdateTail
+.L099 ;  if grown > 0 then grown = grown - 1  :  length = length + 1 else gosub _UpdateTail
 
 	LDA #0
 	CMP grown
-     BCS .skipL0101
+     BCS .skipL099
 .condpart19
 	DEC grown
 	INC length
  jmp .skipelse0
-.skipL0101
+.skipL099
  jsr ._UpdateTail
 
 .skipelse0
 .
  ; 
 
-.L0102 ;  speed  =   ( MAX_LEN - length )  / 32
+.L0100 ;  speed  =   ( MAX_LEN - length )  / 32
 
 ; complex statement detected
 	LDA #MAX_LEN
@@ -1047,7 +1040,7 @@ MASKS
 .
  ; 
 
-.L0103 ;  gosub _UpdateHead
+.L0101 ;  gosub _UpdateHead
 
  jsr ._UpdateHead
 
@@ -1060,7 +1053,7 @@ MASKS
 .
  ; 
 
-.L0104 ;  return
+.L0102 ;  return
 
 	tsx
 	lda 2,x ; check return address
@@ -1075,63 +1068,63 @@ MASKS
 ._UpdateHead
  ; _UpdateHead
 
-.L0105 ;  if headDir  =  NORTH then headY  =  headY - 1
+.L0103 ;  if headDir  =  NORTH then headY  =  headY - 1
 
 	LDA headDir
 	CMP #NORTH
-     BNE .skipL0105
+     BNE .skipL0103
 .condpart20
 	DEC headY
-.skipL0105
-.L0106 ;  if headDir  =  EAST then headX  =  headX + 1
+.skipL0103
+.L0104 ;  if headDir  =  EAST then headX  =  headX + 1
 
 	LDA headDir
 	CMP #EAST
-     BNE .skipL0106
+     BNE .skipL0104
 .condpart21
 	INC headX
-.skipL0106
-.L0107 ;  if headDir  =  SOUTH then headY  =  headY + 1
+.skipL0104
+.L0105 ;  if headDir  =  SOUTH then headY  =  headY + 1
 
 	LDA headDir
 	CMP #SOUTH
-     BNE .skipL0107
+     BNE .skipL0105
 .condpart22
 	INC headY
-.skipL0107
-.L0108 ;  if headDir  =  WEST then headX  =  headX - 1
+.skipL0105
+.L0106 ;  if headDir  =  WEST then headX  =  headX - 1
 
 	LDA headDir
 	CMP #WEST
-     BNE .skipL0108
+     BNE .skipL0106
 .condpart23
 	DEC headX
+.skipL0106
+.
+ ; 
+
+.L0107 ;  tailStart = tailStart + 1
+
+	INC tailStart
+.L0108 ;  if tailStart = MAX_LEN then tailStart = 0
+
+	LDA tailStart
+	CMP #MAX_LEN
+     BNE .skipL0108
+.condpart24
+	LDA #0
+	STA tailStart
 .skipL0108
 .
  ; 
 
-.L0109 ;  tailStart = tailStart + 1
-
-	INC tailStart
-.L0110 ;  if tailStart = MAX_LEN then tailStart = 0
-
-	LDA tailStart
-	CMP #MAX_LEN
-     BNE .skipL0110
-.condpart24
-	LDA #0
-	STA tailStart
-.skipL0110
-.
- ; 
-
-.L0111 ;  temp1  =  tailStart  /  4
+.L0109 ;  temp1  =  tailStart  /  4
 
 	LDA tailStart
 	lsr
 	lsr
 	STA temp1
-.L0112 ;  temp2  =  tailStart  &  %00000011
+.L0110 ;  temp2  =  tailStart  &  %00000011
 
 	LDA tailStart
 	AND #%00000011
@@ -1139,7 +1132,7 @@ MASKS
 .
  ; 
 
-.L0113 ;  temp3  =  headDir  &  MASKS[temp2]
+.L0111 ;  temp3  =  headDir  &  MASKS[temp2]
 
 	LDA headDir
 	LDX temp2
@@ -1148,7 +1141,7 @@ MASKS
 .
  ; 
 
-.L0114 ;  directions[temp1]  =  directions[temp1]  &   ( MASKS[temp2]  ^  %11111111 ) 
+.L0112 ;  directions[temp1]  =  directions[temp1]  &   ( MASKS[temp2]  ^  %11111111 ) 
 
 ; complex statement detected
 	LDX temp1
@@ -1163,7 +1156,7 @@ MASKS
 	AND $00,x
 	LDX temp1
 	STA directions,x
-.L0115 ;  directions[temp1]  =  directions[temp1]  |  temp3
+.L0113 ;  directions[temp1]  =  directions[temp1]  |  temp3
 
 	LDX temp1
 	LDA directions,x
@@ -1173,11 +1166,11 @@ MASKS
 .
  ; 
 
-.L0116 ;  if headX = foodX  &&  headY = foodY then goto _SkipCollisionCheck
+.L0114 ;  if headX = foodX  &&  headY = foodY then goto _SkipCollisionCheck
 
 	LDA headX
 	CMP foodX
-     BNE .skipL0116
+     BNE .skipL0114
 .condpart25
 	LDA headY
 	CMP foodY
@@ -1186,8 +1179,8 @@ MASKS
  jmp ._SkipCollisionCheck
 
 .skip25then
-.skipL0116
-.L0117 ;  if pfread ( headX ,  headY )  then bits2_GameOverFlag{2}  =  1
+.skipL0114
+.L0115 ;  if pfread ( headX ,  headY )  then bits2_GameOverFlag{2}  =  1
 
 	LDA headX
 	LDY headY
@@ -1207,19 +1200,19 @@ MASKS
  ldx #8
  jmp BS_jsr
 ret_point13
-	BNE .skipL0117
+	BNE .skipL0115
 .condpart27
 	LDA bits2_GameOverFlag
 	ORA #4
 	STA bits2_GameOverFlag
-.skipL0117
+.skipL0115
 .
  ; 
 
 ._SkipCollisionCheck
  ; _SkipCollisionCheck
 
-.L0118 ;  return
+.L0116 ;  return
 
 	tsx
 	lda 2,x ; check return address
@@ -1237,13 +1230,13 @@ ret_point13
 .
  ; 
 
-.L0119 ;  temp1  =  tailEnd  /  4
+.L0117 ;  temp1  =  tailEnd  /  4
 
 	LDA tailEnd
 	lsr
 	lsr
 	STA temp1
-.L0120 ;  temp2  =  tailEnd  &  %00000011
+.L0118 ;  temp2  =  tailEnd  &  %00000011
 
 	LDA tailEnd
 	AND #%00000011
@@ -1251,7 +1244,7 @@ ret_point13
 .
  ; 
 
-.L0121 ;  temp3  =  directions[temp1]  &  MASKS[temp2]
+.L0119 ;  temp3  =  directions[temp1]  &  MASKS[temp2]
 
 	LDX temp1
 	LDA directions,x
@@ -1261,7 +1254,7 @@ ret_point13
 .
  ; 
 
-.L0122 ;  if temp3  =  NORTH  &  MASKS[temp2] then tailY  =  tailY - 1
+.L0120 ;  if temp3  =  NORTH  &  MASKS[temp2] then tailY  =  tailY - 1
 
 ; complex condition detected
 	LDA #NORTH
@@ -1272,11 +1265,11 @@ ret_point13
   PLA
 	LDA temp3
 	CMP  1,x
-     BNE .skipL0122
+     BNE .skipL0120
 .condpart28
 	DEC tailY
-.skipL0122
-.L0123 ;  if temp3  =  EAST  &  MASKS[temp2] then tailX  =  tailX + 1
+.skipL0120
+.L0121 ;  if temp3  =  EAST  &  MASKS[temp2] then tailX  =  tailX + 1
 
 ; complex condition detected
 	LDA #EAST
@@ -1287,11 +1280,11 @@ ret_point13
   PLA
 	LDA temp3
 	CMP  1,x
-     BNE .skipL0123
+     BNE .skipL0121
 .condpart29
 	INC tailX
-.skipL0123
-.L0124 ;  if temp3  =  SOUTH  &  MASKS[temp2] then tailY  =  tailY + 1
+.skipL0121
+.L0122 ;  if temp3  =  SOUTH  &  MASKS[temp2] then tailY  =  tailY + 1
 
 ; complex condition detected
 	LDA #SOUTH
@@ -1302,11 +1295,11 @@ ret_point13
   PLA
 	LDA temp3
 	CMP  1,x
-     BNE .skipL0124
+     BNE .skipL0122
 .condpart30
 	INC tailY
-.skipL0124
-.L0125 ;  if temp3  =  WEST  &  MASKS[temp2] then tailX  =  tailX - 1
+.skipL0122
+.L0123 ;  if temp3  =  WEST  &  MASKS[temp2] then tailX  =  tailX - 1
 
 ; complex condition detected
 	LDA #WEST
@@ -1317,29 +1310,29 @@ ret_point13
   PLA
 	LDA temp3
 	CMP  1,x
-     BNE .skipL0125
+     BNE .skipL0123
 .condpart31
 	DEC tailX
+.skipL0123
+.
+ ; 
+
+.L0124 ;  tailEnd = tailEnd + 1
+
+	INC tailEnd
+.L0125 ;  if tailEnd = MAX_LEN then tailEnd = 0
+
+	LDA tailEnd
+	CMP #MAX_LEN
+     BNE .skipL0125
+.condpart32
+	LDA #0
+	STA tailEnd
 .skipL0125
 .
  ; 
 
-.L0126 ;  tailEnd = tailEnd + 1
-
-	INC tailEnd
-.L0127 ;  if tailEnd = MAX_LEN then tailEnd = 0
-
-	LDA tailEnd
-	CMP #MAX_LEN
-     BNE .skipL0127
-.condpart32
-	LDA #0
-	STA tailEnd
-.skipL0127
-.
- ; 
-
-.L0128 ;  return
+.L0126 ;  return
 
 	tsx
 	lda 2,x ; check return address
@@ -1354,7 +1347,7 @@ ret_point13
 ._UpdateFood
  ; _UpdateFood
 
-.L0129 ;  foodX  =   ( rand & 31 ) 
+.L0127 ;  foodX  =   ( rand & 31 ) 
 
 ; complex statement detected
         lda rand
@@ -1370,7 +1363,7 @@ ret_point13
  endif
 	AND #31
 	STA foodX
-.L0130 ;  foodY  =   ( rand & 23 ) 
+.L0128 ;  foodY  =   ( rand & 23 ) 
 
 ; complex statement detected
         lda rand
@@ -1386,16 +1379,16 @@ ret_point13
  endif
 	AND #23
 	STA foodY
-.L0131 ;  if foodY  =  23 then goto _UpdateFood
+.L0129 ;  if foodY  =  23 then goto _UpdateFood
 
 	LDA foodY
 	CMP #23
-     BNE .skipL0131
+     BNE .skipL0129
 .condpart33
  jmp ._UpdateFood
 
-.skipL0131
-.L0132 ;  if pfread ( foodX , foodY )  then goto _UpdateFood
+.skipL0129
+.L0130 ;  if pfread ( foodX , foodY )  then goto _UpdateFood
 
 	LDA foodX
 	LDY foodY
@@ -1415,15 +1408,15 @@ ret_point13
  ldx #8
  jmp BS_jsr
 ret_point14
-	BNE .skipL0132
+	BNE .skipL0130
 .condpart34
  jmp ._UpdateFood
 
-.skipL0132
+.skipL0130
 .
  ; 
 
-.L0133 ;  temp5  =  foodX * 4 + 17
+.L0131 ;  temp5  =  foodX * 4 + 17
 
 ; complex statement detected
 	LDA foodX
@@ -1432,14 +1425,14 @@ ret_point14
 	CLC
 	ADC #17
 	STA temp5
-.L0134 ;  player0x  =  temp5
+.L0132 ;  player0x  =  temp5
 
 	LDA temp5
 	STA player0x
 .
  ; 
 
-.L0135 ;  temp5  =  foodY * 4 + 4
+.L0133 ;  temp5  =  foodY * 4 + 4
 
 ; complex statement detected
 	LDA foodY
@@ -1448,14 +1441,14 @@ ret_point14
 	CLC
 	ADC #4
 	STA temp5
-.L0136 ;  player0y  =  temp5
+.L0134 ;  player0y  =  temp5
 
 	LDA temp5
 	STA player0y
 .
  ; 
 
-.L0137 ;  return
+.L0135 ;  return
 
 	tsx
 	lda 2,x ; check return address
@@ -1470,7 +1463,7 @@ ret_point14
 ._UpdateEat
  ; _UpdateEat
 
-.L0138 ;  score = score + 1
+.L0136 ;  score = score + 1
 
 	SED
 	CLC
@@ -1484,19 +1477,19 @@ ret_point14
 	ADC #$00
 	STA score
 	CLD
-.L0139 ;  if length + grown  =  MAX_LEN then goto _SkipGrownIncrement
+.L0137 ;  if length + grown  =  MAX_LEN then goto _SkipGrownIncrement
 
 ; complex condition detected
 	LDA length
 	CLC
 	ADC grown
 	CMP #MAX_LEN
-     BNE .skipL0139
+     BNE .skipL0137
 .condpart35
  jmp ._SkipGrownIncrement
 
-.skipL0139
-.L0140 ;  grown = grown + 1
+.skipL0137
+.L0138 ;  grown = grown + 1
 
 	INC grown
 .
@@ -1514,14 +1507,14 @@ ret_point14
 .
  ; 
 
-.L0141 ;  eat_sound  =  6
+.L0139 ;  eatSound  =  6
 
 	LDA #6
-	STA eat_sound
+	STA eatSound
 .
  ; 
 
-.L0142 ;  foodX = 0  :  foodY = 0
+.L0140 ;  foodX = 0  :  foodY = 0
 
 	LDA #0
 	STA foodX
@@ -1529,7 +1522,7 @@ ret_point14
 .
  ; 
 
-.L0143 ;  return
+.L0141 ;  return
 
 	tsx
 	lda 2,x ; check return address
@@ -1544,17 +1537,17 @@ ret_point14
 .
  ; 
 
-.L0144 ;  rem  ****************************************************************
+.L0142 ;  rem  ****************************************************************
 
-.L0145 ;  rem  ****************************************************************
+.L0143 ;  rem  ****************************************************************
+
+.L0144 ;  rem  *
+
+.L0145 ;  rem  *  Game Over Setup
 
 .L0146 ;  rem  *
 
-.L0147 ;  rem  *  Game Over Setup
-
-.L0148 ;  rem  *
-
-.L0149 ;  rem  `
+.L0147 ;  rem  `
 
 ._GameOverSetup
  ; _GameOverSetup
@@ -1562,7 +1555,7 @@ ret_point14
 .
  ; 
 
-.L0150 ;  playfield:
+.L0148 ;  playfield:
 
   ifconst pfres
 	  ldx #(24>pfres)*(pfres*pfwidth-1)+(24<=pfres)*95
@@ -1600,27 +1593,21 @@ pflabel0
 	sta playfield-128,x
 	dex
 	bpl pflabel0
-.
- ; 
-
-.L0151 ;  player0x  =  0
+.L0149 ;  player0x  =  0  :  player0y  =  0
 
 	LDA #0
 	STA player0x
-.L0152 ;  player0y  =  0
-
-	LDA #0
 	STA player0y
-.L0153 ;  bits0_DebounceReset{0}  =  1
+.L0150 ;  bits0_DebounceReset{0}  =  1
 
 	LDA bits0_DebounceReset
 	ORA #1
 	STA bits0_DebounceReset
-.L0154 ;  crash_sound = 8
+.L0151 ;  crashSound = 8
 
 	LDA #8
-	STA crash_sound
-.L0155 ;  shaking_effect  =  25
+	STA crashSound
+.L0152 ;  shaking_effect  =  25
 
 	LDA #25
 	STA shaking_effect
@@ -1630,30 +1617,28 @@ pflabel0
 ._GameOverLoop
  ; _GameOverLoop
 
-.
- ; 
-
-.L0156 ;  COLUPF  =  $6C
+.L0153 ;  COLUPF  =  $6C  :  COLUBK  =  $00
 
 	LDA #$6C
 	STA COLUPF
-.L0157 ;  COLUBK  =  $00
-
 	LDA #$00
 	STA COLUBK
 .
  ; 
 
-.L0158 ;  if crash_sound = 0 then goto _SkipSound2
+.L0154 ;  if crashSound = 0 then goto _SkipSound2
 
-	LDA crash_sound
+	LDA crashSound
 	CMP #0
-     BNE .skipL0158
+     BNE .skipL0154
 .condpart36
  jmp ._SkipSound2
 
-.skipL0158
-.L0159 ;  AUDV0  =  8  :  AUDC0  =  3  :  AUDF0  =  19
+.skipL0154
+.
+ ; 
+
+.L0155 ;  AUDV0  =  8  :  AUDC0  =  3  :  AUDF0  =  19
 
 	LDA #8
 	STA AUDV0
@@ -1661,72 +1646,75 @@ pflabel0
 	STA AUDC0
 	LDA #19
 	STA AUDF0
-.L0160 ;  crash_sound  =  crash_sound - 1
+.L0156 ;  crashSound  =  crashSound - 1
 
-	DEC crash_sound
+	DEC crashSound
+.
+ ; 
+
 ._SkipSound2
  ; _SkipSound2
 
-.L0161 ;  if !crash_sound then AUDV0  =  0
+.L0157 ;  if !crashSound then AUDV0  =  0
 
-	LDA crash_sound
-	BNE .skipL0161
+	LDA crashSound
+	BNE .skipL0157
 .condpart37
 	LDA #0
 	STA AUDV0
-.skipL0161
+.skipL0157
 .
  ; 
 
-.L0162 ;  _Master_Counter  =  _Master_Counter  +  1
+.L0158 ;  _Master_Counter  =  _Master_Counter  +  1
 
 	INC _Master_Counter
-.
- ; 
-
-.L0163 ;  if shaking_effect  =  0 then goto _SkipShake
+.L0159 ;  if shaking_effect  =  0 then goto _SkipShake
 
 	LDA shaking_effect
 	CMP #0
-     BNE .skipL0163
+     BNE .skipL0159
 .condpart38
  jmp ._SkipShake
 
-.skipL0163
-.L0164 ;  shakescreen  =  shakescreen + 32
+.skipL0159
+.L0160 ;  shakescreen  =  shakescreen + 32
 
 	LDA shakescreen
 	CLC
 	ADC #32
 	STA shakescreen
-.L0165 ;  shaking_effect  =  shaking_effect - 1
+.L0161 ;  shaking_effect  =  shaking_effect - 1
 
 	DEC shaking_effect
+.
+ ; 
+
 ._SkipShake
  ; _SkipShake
 
 .
  ; 
 
-.L0166 ;  rem  ````````````````````````````````````````````````````````````````
+.L0162 ;  rem  ````````````````````````````````````````````````````````````````
 
-.L0167 ;  rem  `  The master counter resets every 2 seconds.
+.L0163 ;  rem  `  The master counter resets every 2 seconds.
 
-.L0168 ;  rem  `
+.L0164 ;  rem  `
 
-.L0169 ;  if _Master_Counter  <  120 then goto _Skip20Counter
+.L0165 ;  if _Master_Counter  <  120 then goto _Skip20Counter
 
 	LDA _Master_Counter
 	CMP #120
-     BCS .skipL0169
+     BCS .skipL0165
 .condpart39
  jmp ._Skip20Counter
 
-.skipL0169
+.skipL0165
 .
  ; 
 
-.L0170 ;  _Master_Counter  =  0
+.L0166 ;  _Master_Counter  =  0
 
 	LDA #0
 	STA _Master_Counter
@@ -1736,31 +1724,31 @@ pflabel0
 .
  ; 
 
-.L0171 ;  rem  ````````````````````````````````````````````````````````````````
+.L0167 ;  rem  ````````````````````````````````````````````````````````````````
 
-.L0172 ;  rem  `  The frame counter increments every 2 seconds.
+.L0168 ;  rem  `  The frame counter increments every 2 seconds.
 
-.L0173 ;  rem  `
+.L0169 ;  rem  `
 
-.L0174 ;  _Frame_Counter  =  _Frame_Counter  +  1
+.L0170 ;  _Frame_Counter  =  _Frame_Counter  +  1
 
 	INC _Frame_Counter
 .
  ; 
 
-.L0175 ;  rem  ````````````````````````````````````````````````````````````````
+.L0171 ;  rem  ````````````````````````````````````````````````````````````````
 
-.L0176 ;  rem  `  If _Frame_Counter reaches 10 (20 seconds), the program resets
+.L0172 ;  rem  `  If _Frame_Counter reaches 10 (20 seconds), the program resets
 
-.L0177 ;  rem  `  and goes to the title screen.
+.L0173 ;  rem  `  and goes to the title screen.
 
-.L0178 ;  rem  `
+.L0174 ;  rem  `
 
-.L0179 ;  if _Frame_Counter  =  5 then bits2_GameOverFlag{2}  =  0  :  goto _GameInit bank1
+.L0175 ;  if _Frame_Counter  =  5 then bits2_GameOverFlag{2}  =  0  :  goto _GameInit bank1
 
 	LDA _Frame_Counter
 	CMP #5
-     BNE .skipL0179
+     BNE .skipL0175
 .condpart40
 	LDA bits2_GameOverFlag
 	AND #251
@@ -1776,7 +1764,7 @@ pflabel0
  pha
  ldx #1
  jmp BS_jsr
-.skipL0179
+.skipL0175
 .
  ; 
 
@@ -1792,7 +1780,7 @@ pflabel0
 .
  ; 
 
-.L0180 ;  drawscreen
+.L0176 ;  drawscreen
 
  sta temp7
  lda #>(ret_point15-1)
@@ -1813,11 +1801,11 @@ ret_point15
 .
  ; 
 
-.L0181 ;  if !switchreset  &&  !joy0fire then bits0_DebounceReset{0}  =  0  :  goto _SkipGameOverReset
+.L0177 ;  if !switchreset  &&  !joy0fire then bits0_DebounceReset{0}  =  0  :  goto _SkipGameOverReset
 
  lda #1
  bit SWCHB
-	BEQ .skipL0181
+	BEQ .skipL0177
 .condpart41
  bit INPT4
 	BPL .skip41then
@@ -1828,23 +1816,23 @@ ret_point15
  jmp ._SkipGameOverReset
 
 .skip41then
-.skipL0181
+.skipL0177
 .
  ; 
 
-.L0182 ;  if bits0_DebounceReset{0} then goto _SkipGameOverReset
+.L0178 ;  if bits0_DebounceReset{0} then goto _SkipGameOverReset
 
 	LDA bits0_DebounceReset
 	LSR
-	BCC .skipL0182
+	BCC .skipL0178
 .condpart43
  jmp ._SkipGameOverReset
 
-.skipL0182
+.skipL0178
 .
  ; 
 
-.L0183 ;  goto _GameInit bank1
+.L0179 ;  goto _GameInit bank1
 
  sta temp7
  lda #>(._GameInit-1)
@@ -1869,7 +1857,7 @@ ret_point15
 .
  ; 
 
-.L0184 ;  goto _GameOverLoop
+.L0180 ;  goto _GameOverLoop
 
  jmp ._GameOverLoop
 
@@ -1879,7 +1867,10 @@ ret_point15
 .
  ; 
 
-.L0185 ;  bank 4
+.
+ ; 
+
+.L0181 ;  bank 4
 
  echo "    ",[(start_bank3 - *)]d , "bytes of ROM space left in bank 3")
  ORG $3FF4-bscode_length
@@ -1926,14 +1917,14 @@ start_bank3 ldx #$ff
 .
  ; 
 
-.L0186 ;  asm
+.L0182 ;  asm
 
     include "titlescreen/asm/titlescreen.asm"
 
 .
  ; 
 
-.L0187 ;  bank 5
+.L0183 ;  bank 5
 
  echo "    ",[(start_bank4 - *)]d , "bytes of ROM space left in bank 4")
  ORG $4FF4-bscode_length
@@ -1980,7 +1971,7 @@ start_bank4 ldx #$ff
 .
  ; 
 
-.L0188 ;  bank 6
+.L0184 ;  bank 6
 
  echo "    ",[(start_bank5 - *)]d , "bytes of ROM space left in bank 5")
  ORG $5FF4-bscode_length
@@ -2027,7 +2018,7 @@ start_bank5 ldx #$ff
 .
  ; 
 
-.L0189 ;  bank 7
+.L0185 ;  bank 7
 
  echo "    ",[(start_bank6 - *)]d , "bytes of ROM space left in bank 6")
  ORG $6FF4-bscode_length
@@ -2074,7 +2065,7 @@ start_bank6 ldx #$ff
 .
  ; 
 
-.L0190 ;  bank 8
+.L0186 ;  bank 8
 
  echo "    ",[(start_bank7 - *)]d , "bytes of ROM space left in bank 7")
  ORG $7FF4-bscode_length
@@ -3633,7 +3624,7 @@ scorepointerset
 	.byte 0
 	repend
 	endif
-playerL071_0
+playerL070_0
 	.byte     %01100000
 	.byte     %11110000
 	.byte     %11110000

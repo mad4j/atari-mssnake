@@ -88,8 +88,8 @@
     ; for application purposes
 
     ; activate game sounds
-    dim eat_sound = f
-    dim crash_sound = f
+    dim eatSound = f
+    dim crashSound = f
 
     dim shakescreen = m
     dim shaking_effect = n
@@ -181,7 +181,6 @@ _SkipTitleResetFire
     bank 2
 
 _MainLoopSetup
-
     ; reset bouncing bits
     bits0_DebounceReset{0} = 1
     bits1_DebounceFireButton{1} = 1
@@ -190,8 +189,8 @@ _MainLoopSetup
     bits2_GameOverFlag{2} = 0
 
     ; deactivate sounds
-    eat_sound=0
-    crash_sound=0
+    eatSound=0
+    crashSound=0
 
     ; dummy food position
     foodX=0 : foodY=0
@@ -214,7 +213,6 @@ _MainLoopSetup
     directions[tailStart] = headDir
 
     score = 0
-
 
     ; initial ms-snake speed (one step every 'speed' frames)
     speed = 0
@@ -243,7 +241,6 @@ end
 _MainLoop
 
     COLUP0 = $20
-    COLUP1 = $60
 
     bits1_DebounceFireButton{1} = 0
 
@@ -276,11 +273,11 @@ _SkipMainReset
     if foodX=0 && foodY=0 then gosub _UpdateFood bank3
     ; pfpixel foodX foodY on
 
-    if eat_sound=0 then goto _SkipSound1
+    if eatSound=0 then goto _SkipSound1
     AUDV0 = 8 : AUDC0 = 4 : AUDF0 = 19
-    eat_sound = eat_sound-1
+    eatSound = eatSound-1
 _SkipSound1
-    if !eat_sound then AUDV0 = 0
+    if !eatSound then AUDV0 = 0
 
     counter = counter+1
     if counter > speed then gosub _UpdateSnake bank3
@@ -294,7 +291,12 @@ _SkipSound1
 
     goto _MainLoop
 
-    
+
+/**
+  * START OF BANK 3
+  * ---------------
+  */
+ 
     bank 3
 
     data MASKS
@@ -393,7 +395,7 @@ _UpdateEat
 
 _SkipGrownIncrement
 
-    eat_sound = 6
+    eatSound = 6
 
     foodX=0 : foodY=0
 
@@ -435,34 +437,42 @@ _GameOverSetup
     ................................
 end
 
-    player0x = 0
-    player0y = 0
+    ; remove player1 from the playfield
+    player0x = 0 : player0y = 0
 
     ; debounce the reset switch.
     bits0_DebounceReset{0} = 1
     
     ; activate crash sound
-    crash_sound=8
+    crashSound=8
 
     ; activate shake effect
     shaking_effect = 25
 
 _GameOverLoop
 
-    COLUPF = $6C
-    COLUBK = $00
+    ; set right color values
+    COLUPF = $6C : COLUBK = $00
 
-    if crash_sound=0 then goto _SkipSound2
+    ; rationale
+    ; pluggable mini-kernels should modify pre-configured colors
+
+    ; manage crash sound
+    if crashSound=0 then goto _SkipSound2
+
     AUDV0 = 8 : AUDC0 = 3 : AUDF0 = 19
-    crash_sound = crash_sound-1
+    crashSound = crashSound-1
+
 _SkipSound2
-    if !crash_sound then AUDV0 = 0
+    if !crashSound then AUDV0 = 0
 
     _Master_Counter = _Master_Counter + 1
 
+    ; manage shaking effect
     if shaking_effect = 0 then goto _SkipShake
     shakescreen = shakescreen+32
     shaking_effect = shaking_effect-1
+
 _SkipShake
 
    rem  ````````````````````````````````````````````````````````````````
@@ -501,6 +511,11 @@ _SkipGameOverReset
 
     goto _GameOverLoop
 
+
+/**
+  * START OF BANK 4
+  * ---------------
+  */
 
     bank 4
 

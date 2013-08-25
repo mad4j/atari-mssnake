@@ -4,14 +4,11 @@
  * 
  * Daniele Olmisani <daniele.olmisani@gmail.com>
  * Luca Olmisani <olmisani.luca@gmail.com>
- * Maria Segnalini <maria.segnalini@gmail.com>
+ * Maria Segnalini <maria.segnalini@bgmail.com>
  */
 
     ; use NTSC system (262 scanlines, 60Hz) 
     set tv NTSC
-
-    ; TODO: fix colors for NTSC
-    ; TODO: verify how to switch colors from NTSC and PAL60
 
     ; use 32KB ROM (8 banks) with Super Chip RAM
     set romsize 32kSC
@@ -39,7 +36,18 @@
     const NORTH = %00000000
     const EAST  = %01010101
     const SOUTH = %10101010
-    const WEST  = %11111111 
+    const WEST  = %11111111
+
+    ; NTSC color palette
+    const FOREG_COLOR = $C2
+    const BACKG_COLOR = $00
+    const SCORE_COLOR = $2C
+    const FOOD_COLOR  = $40
+
+    const GAMEOVER_FOREG = $4E
+    const GAMEOVER_BACKG = $00
+
+    ; TODO: define PAL60 palette
 
     ; max snake lngth
     const MAX_LEN = 192
@@ -127,7 +135,7 @@ _GameInit
 
 _TitleScreenSetup
 
-    scorecolor = $2C
+    scorecolor = SCORE_COLOR
 
     player0x = 0
     player0y = 0
@@ -146,16 +154,6 @@ _TitleScreenSetup
 _TitleScreenLoop
 
     gosub titledrawscreen bank4
-
-    ; set correct color values in main loop
-    ;COLUPF = $DC
-    ;COLUBK = $00
-
-    ; rationale
-    ; pluggable mini-kernels should modify pre-configured colors
-
-    ; static visualization: nothing else to do
-    ;drawscreen
 
     ; no button pressed then clear debounce bit
     if !switchreset && !joy0fire then bits0_DebounceReset{0} = 0 : goto _SkipTitleResetFire
@@ -210,9 +208,11 @@ _MainLoopSetup
     ; ms-snake initial grown
     grown=2
 
-    tailStart = 0 : tailEnd = 0
+    tailStart = 0
+    tailEnd = 0
 
-    tailX = headX-1 : tailY = headY
+    tailX = headX-1
+    tailY = headY
     directions[tailStart] = headDir
 
     score = 0
@@ -243,7 +243,7 @@ end
 
 _MainLoop
 
-    COLUP0 = $20
+    COLUP0 = FOOD_COLOR
 
     bits1_DebounceFireButton{1} = 0
 
@@ -267,8 +267,9 @@ _SkipMainReset
     ; check to see if the game is over
     if bits2_GameOverFlag{2} then goto _GameOverSetup bank3
 
-    COLUPF = $52
-    COLUBK = $00
+    COLUPF = FOREG_COLOR
+
+    COLUBK = BACKG_COLOR
 
     pfpixel headX headY on
     if grown=0 then pfpixel tailX tailY off
@@ -311,7 +312,7 @@ _UpdateSnake
     
     if grown>0 then grown=grown-1 : length=length+1 else gosub _UpdateTail
 
-    speed = (MAX_LEN-length)/32
+    speed = (MAX_LEN-length)/16
 
     gosub _UpdateHead
 
@@ -414,6 +415,8 @@ _SkipGrownIncrement
 _GameOverSetup
 
     playfield:
+    ................................
+    ................................
     .XXXXXX.XXXXXX.XXXXXXXXXX.XXXXX.
     .XX.....XX..XX.XX..XX..XX.XX....
     .XX.XXX.XXXXXX.XX..XX..XX.XXXX..
@@ -425,8 +428,6 @@ _GameOverSetup
     ...XX..XX.XX..XX.XXXX..XXXXX....
     ...XX..XX.XX..XX.XX....XX..XX...
     ...XXXXXX...XX...XXXXX.XX..XX...
-    ................................
-    ................................
     ................................
     ................................
     ................................
@@ -455,7 +456,8 @@ end
 _GameOverLoop
 
     ; set right color values
-    COLUPF = $6C : COLUBK = $00
+    COLUPF = GAMEOVER_FOREG
+    COLUBK = GAMEOVER_BACKG
 
     ; rationale
     ; pluggable mini-kernels should modify pre-configured colors

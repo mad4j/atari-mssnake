@@ -1,18 +1,3 @@
 game
-.
- ; 
-
-.
- ; 
-
-.
- ; 
-
-.
- ; 
-
-.
- ; 
-
-.L00 ;  MAC titlescreenlayout
+.bmp_48x2_1_window ; bmp_48x2_1_window  =  78
 

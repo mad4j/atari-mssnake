@@ -17,7 +17,7 @@
 	;draw_48x2_3
 	;draw_player
 	;draw_gameselect
-	draw_space 100
+	draw_space 10
 	draw_score
  ENDM
 

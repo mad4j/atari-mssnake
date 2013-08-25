@@ -7,8 +7,11 @@
  * Maria Segnalini <maria.segnalini@gmail.com>
  */
 
-    ; use PAL colors
-    set tv pal
+    ; use NTSC system (262 scanlines, 60Hz) 
+    set tv NTSC
+
+    ; TODO: fix colors for NTSC
+    ; TODO: verify how to switch colors from NTSC and PAL60
 
     ; use 32KB ROM (8 banks) with Super Chip RAM
     set romsize 32kSC

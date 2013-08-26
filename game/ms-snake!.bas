@@ -38,6 +38,10 @@
     const SOUTH = %10101010
     const WEST  = %11111111
 
+    ; rationale:
+    ; each byte will store 4 directions
+
+
     ; NTSC color palette
     const FOREG_COLOR = $C2
     const BACKG_COLOR = $00
@@ -47,9 +51,12 @@
     const GAMEOVER_FOREG = $4E
     const GAMEOVER_BACKG = $00
 
+    const TITLE_COL1 = $DA
+
     ; TODO: define PAL60 palette
 
-    ; max snake lngth
+
+    ; max snake length
     const MAX_LEN = 192
 
     ; all-purpose bits for various jobs
@@ -90,7 +97,7 @@
     dim tailEnd = k
     dim tailStart = h
 
-    ; read/write array of ms-snake body directions
+    ; array of ms-snake body directions
     dim directions = var0
 
     ; rationale:
@@ -102,10 +109,11 @@
     dim eatSound = f
     dim crashSound = f
 
+    ; activate screen shake effect
     dim shakescreen = m
     dim shaking_effect = n
 
-
+    dim bmp_48x1_1_color = o
 
 /**
  * Game initializaion
@@ -115,7 +123,8 @@
 _GameInit
 
     ; mute volume of both sound channels
-    AUDV0 = 0 : AUDV1 = 0
+    AUDV0 = 0
+    AUDV1 = 0
 
     ; clears 25 of the normal 26 variables
     ; last variable (named 'z') used for all-purposes bits
@@ -126,8 +135,6 @@ _GameInit
     ; is used to control how the program is reset.
     bits = bits & %00000100
 
-    ; TODO: clear also SC registers!
-
     ; skip title screen if game has been played and player
     ; presses fire button or reset switch at the end of the game
     if bits2_GameOverFlag{2} then goto _MainLoopSetup bank2
@@ -136,9 +143,6 @@ _GameInit
 _TitleScreenSetup
 
     scorecolor = SCORE_COLOR
-
-    player0x = 0
-    player0y = 0
     
     ; debounce the reset switch
     bits0_DebounceReset{0} = 1
@@ -152,6 +156,8 @@ _TitleScreenSetup
 
 
 _TitleScreenLoop
+
+    bmp_48x1_1_color = TITLE_COL1
 
     gosub titledrawscreen bank4
 
@@ -182,6 +188,7 @@ _SkipTitleResetFire
     bank 2
 
 _MainLoopSetup
+
     ; reset bouncing bits
     bits0_DebounceReset{0} = 1
     bits1_DebounceFireButton{1} = 1
@@ -194,10 +201,12 @@ _MainLoopSetup
     crashSound=0
 
     ; dummy food position
-    foodX=0 : foodY=0
+    foodX=0
+    foodY=0
 
     ; ms-sanke head starting position
-    headX = 5 : headY = 5
+    headX = 5
+    headY = 5
 
     ; ms-sanke head starting direction
     headDir = EAST
@@ -208,13 +217,18 @@ _MainLoopSetup
     ; ms-snake initial grown
     grown=2
 
+    ; initial indexs of body direcrtions
     tailStart = 0
     tailEnd = 0
 
+    ; ms-snake tail is near the head
     tailX = headX-1
     tailY = headY
+
+    ; store initial direction
     directions[tailStart] = headDir
 
+    ; reset player score
     score = 0
 
     ; initial ms-snake speed (one step every 'speed' frames)
@@ -224,12 +238,13 @@ _MainLoopSetup
     ; clear the play field
     pfclear
 
-    ; draw game play field
+    ; draw game field border
     pfhline 0 0 31 on
     pfhline 0 22 31 on
     pfvline 0 1 21 on
     pfvline 31 1 21 on
 
+    ; food sprite
     player0:
     %01100000
     %11110000
@@ -312,6 +327,7 @@ _UpdateSnake
     
     if grown>0 then grown=grown-1 : length=length+1 else gosub _UpdateTail
 
+    ; ms-snake speed depends on its length
     speed = (MAX_LEN-length)/16
 
     gosub _UpdateHead
@@ -321,7 +337,6 @@ _UpdateSnake
     ; in this way, when MAX_LEN is reached, the location freed by tail
     ; will be occupied by the head
 
-    ; score = score+1
     return
 
 _UpdateHead
@@ -376,11 +391,9 @@ _UpdateFood
     ; check if (foodX, foodY) is free
     if pfread(foodX,foodY) then goto _UpdateFood
 
-    temp5 = foodX*4+17
-    player0x = temp5
-
-    temp5 = foodY*4+4
-    player0y = temp5
+    ; converts playfiled in player coordinates
+    player0x = foodX*4+17
+    player0y = foodY*4+4
 
     return
 
@@ -405,16 +418,14 @@ _SkipGrownIncrement
 
     return
 
-
-   rem  ****************************************************************
-   rem  ****************************************************************
-   rem  *
-   rem  *  Game Over Setup
-   rem  *
-   rem  `
+/**
+ * Game Over
+ * manage Game Over screen
+ */
 _GameOverSetup
 
     playfield:
+    ................................
     ................................
     ................................
     .XXXXXX.XXXXXX.XXXXXXXXXX.XXXXX.
@@ -428,7 +439,6 @@ _GameOverSetup
     ...XX..XX.XX..XX.XXXX..XXXXX....
     ...XX..XX.XX..XX.XX....XX..XX...
     ...XXXXXX...XX...XXXXX.XX..XX...
-    ................................
     ................................
     ................................
     ................................

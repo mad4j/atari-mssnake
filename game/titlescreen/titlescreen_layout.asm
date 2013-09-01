@@ -19,9 +19,11 @@
 	;draw_48x2_2
 	;draw_48x2_3
 	;draw_player
+
 	;draw_gameselect
-	
-	;draw_score
+
+	draw_space 30
+	draw_score
  ENDM
 
  ; minikernel choices are:

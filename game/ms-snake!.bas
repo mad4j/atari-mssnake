@@ -54,6 +54,7 @@
     const TITLE_COL1 = $DA
 
     ; TODO: define PAL60 palette
+    ; TODO: use the BW/Col switch in order to change NTSC/PAL palette
 
 
     ; max snake length
@@ -115,6 +116,18 @@
 
     dim bmp_48x1_1_color = o
 
+    dim score1 = score
+    dim score2 = score+1
+    dim score3 = score+2
+
+    dim highScore1 = p
+    dim highScore2 = q
+    dim highScore3 = r
+
+    highScore1 = 0
+    highScore2 = 0
+    highScore3 = 0
+
 /**
  * Game initializaion
  * clear game internal state and in/out registers
@@ -126,21 +139,15 @@ _GameInit
     AUDV0 = 0
     AUDV1 = 0
 
-    ; clears 25 of the normal 26 variables
-    ; last variable (named 'z') used for all-purposes bits
-    for temp5 = 0 to 24 : a[temp5] = 0 : next
-
-    ; clear 7 of the 8 All_Purpose_01 bits
-    ; bit 2 is not cleared because bits2_GameOverFlag{2}
-    ; is used to control how the program is reset.
-    bits = bits & %00000100
-
     ; skip title screen if game has been played and player
     ; presses fire button or reset switch at the end of the game
     if bits2_GameOverFlag{2} then goto _MainLoopSetup bank2
 
-
 _TitleScreenSetup
+
+    score1 = highScore1
+    score2 = highScore2
+    score3 = highScore3
 
     scorecolor = SCORE_COLOR
     
@@ -414,7 +421,8 @@ _SkipGrownIncrement
 
     eatSound = 6
 
-    foodX=0 : foodY=0
+    foodX=0
+    foodY=0
 
     return
 
@@ -423,6 +431,68 @@ _SkipGrownIncrement
  * manage Game Over screen
  */
 _GameOverSetup
+
+
+    ; remove player1 from the playfield
+    player0x = 0 : player0y = 0
+
+    ; debounce the reset switch.
+    bits0_DebounceReset{0} = 1
+    
+    ; activate crash sound
+    crashSound=8
+
+    ; activate shake effect
+    shaking_effect = 25
+
+    if score1 > highScore1 then goto __New_High_Score
+    if score1 < highScore1 then goto __Skip_High_Score
+
+    if score2 > highScore2 then goto __New_High_Score
+    if score2 < highScore2 then goto __Skip_High_Score
+
+    if score3 > highScore3 then goto __New_High_Score
+    if score3 < highScore3 then goto __Skip_High_Score
+
+    goto __Skip_High_Score
+
+__New_High_Score
+
+    highScore1 = score1
+    highScore2 = score2
+    highScore3 = score3
+
+    playfield:
+    ................................
+    ................................
+    ................................
+    .........X..X.XXX.X...X.........
+    .........XX.X.X...X...X.........
+    .........X.XX.XX..X.X.X.........
+    .........X..X.X...X.X.X.........
+    .........X..X.XXX..X.X..........
+    ................................
+    .........X.X.X.XXXX.X.X.........
+    .........X.X.X.X....X.X.........
+    .........XXX.X.X.XX.XXX.........
+    .........X.X.X.X..X.X.X.........
+    .........X.X.X.XXXX.X.X.........
+    ................................
+    ......XXX.XXX.XXX.XXXX.XXX......
+    ......X...X...X.X.X..X.X........
+    ......XXX.X...X.X.XXX..XX.......
+    ........X.X...X.X.X..X.X........
+    ......XXX.XXX.XXX.X..X.XXX......
+    ................................
+    ................................
+    ................................
+    ................................
+end
+
+
+   goto _GameOverLoop bank3
+
+__Skip_High_Score
 
     playfield:
     ................................
@@ -450,18 +520,6 @@ _GameOverSetup
     ................................
     ................................
 end
-
-    ; remove player1 from the playfield
-    player0x = 0 : player0y = 0
-
-    ; debounce the reset switch.
-    bits0_DebounceReset{0} = 1
-    
-    ; activate crash sound
-    crashSound=8
-
-    ; activate shake effect
-    shaking_effect = 25
 
 _GameOverLoop
 

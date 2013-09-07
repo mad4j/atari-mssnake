@@ -1,0 +1,357 @@
+body {
+	margin: 0;
+  color: #FFFFFF;
+  font-family: sans-serif;
+  font-weight: 200;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	color: #EEEEEE;
+	font-weight: 200;
+  font-family: 'Dosis', sans-serif;
+}
+
+a:focus { 
+    outline: none; 
+}
+
+p {
+  font-size: 16px;
+}
+
+/******************************************
+			 Navigation Modification
+*******************************************/
+.nav {
+	margin-bottom: 0;
+}
+
+.navbar-left {
+  border: medium none;
+  left: 0;
+  position: fixed;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 0 30px 0 #111111;
+}
+
+.navbar-left ul {
+  padding: 0 20px;
+}
+
+.navbar-left ul li {
+	position: relative;
+  float: left;
+}
+
+.navbar-left ul li a:link,
+.navbar-left ul li a:visited {
+	padding: 15px;
+  float: left;
+  color: #FFFFFF;
+  font-family: 'Dosis', sans-serif;
+  font-size: 16px;
+}
+
+.navbar-left ul li a:hover,
+.navbar-left ul li a:focus {
+	background: none;
+}
+
+.navbar-left ul li a.enabled {
+	border-bottom: 3px solid #FFFFFF;
+}
+
+/**********************************
+	 Scroll to Top link 
+***********************************/
+#scrollToTop {
+	width: 100%;
+	height: 40px;
+	line-height: 40px;
+	background-color: #111111;
+	color: #CCCCCC;
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	text-align: center;
+	display: none;
+	cursor: pointer;
+	transition:all 0.3s;
+	z-index: 10000;
+  opacity: .6;
+}
+
+#scrollToTop:hover {
+	text-decoration: none;
+	background-color: #000000;
+	color: #999999;
+}
+
+/********************************
+ Main Sections and Content Area
+*********************************/
+.page {
+  position: relative;
+  padding: 25px 0;
+  font-weight: 100;
+  line-height: 1.5;
+}
+
+.page h1 {
+	font-size: 90px;
+  letter-spacing: 0.12em;
+  line-height: 90px;
+  margin: 25px 0;
+}
+
+.page h2 {
+  margin: 25px 0;
+  font-size: 29px;
+  letter-spacing: 0.08em;
+  line-height: 29px;
+}
+
+.page h3 {
+	font-weight: 100;
+	margin-bottom: 30px;
+}
+
+.page .content-byline {
+  color:#999999;
+  font-size:20px;
+  font-weight:300;
+  line-height:1.25;
+  margin-bottom:40px;
+}
+
+/***********************************
+			Various
+***********************************/
+.orange {
+	background-color:  #F8823C;
+}
+
+.blue {
+	background-color: #2C5379;
+}
+
+.red {
+  background-color: #EB2142;
+}
+
+.pink {
+	background-color: #FF00AE;
+}
+
+.green {
+	background-color: #CAEA2A;
+}
+
+.purple {
+	background-color: #8160FF;
+}
+
+.orange-txt {
+	color:  #F8823C;
+}
+
+.blue-txt {
+	color: #2C5379;
+}
+
+.red-text {
+  color: #EB2142;
+}
+
+.pink-txt {
+	color: #FF00AE;
+}
+
+.green-txt {
+	color: #CAEA2A;
+}
+
+.purple-txt {
+	color: #8160FF;
+}
+
+.center {
+	text-align: center;
+}
+
+.left {
+	text-align: left;
+}
+
+.right {
+	text-align: right;
+}
+
+.large {
+	font-size: 26px;
+}
+
+
+/*********************************
+    Symbols
+*********************************/
+
+.symbol-square-45{
+  display: block;
+  width: 100px;
+  height: 100px;
+  border: 4px solid #FFFFFF;
+  transform:rotate(45deg);
+  -ms-transform:rotate(45deg); /* IE 9 */
+  -webkit-transform:rotate(45deg); /* Safari and Chrome */
+  border-radius: 20px;
+  text-align: center;
+  margin: 50px;
+  float: left;
+}
+
+.symbol-square-45 span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  line-height: 100px;
+  font-size: 3em;
+  color: #FFFFFF;
+  font-family: Arial;
+   transform:rotate(-45deg);
+  -ms-transform:rotate(-45deg); /* IE 9 */
+  -webkit-transform:rotate(-45deg); /* Safari and Chrome */
+}
+
+.symbol-circle-180 {
+  display: block;
+  width: 100px;
+  height: 100px;
+  border: 4px solid #FFFFFF;
+  border-radius: 100px;
+  text-align: center;
+  float: left;
+  margin: 50px;
+}
+
+.symbol-circle-180 span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  font-size: 2.5em;
+  line-height: 100px;
+  color: #FFFFFF;
+  font-family: Arial;
+}
+
+.symbol-square-90 {
+  display: block;
+  width: 100px;
+  height: 100px;
+  border: 4px solid #FFFFFF;
+  text-align: center;
+  float: left;
+  margin: 50px;
+}
+
+.symbol-square-90 span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  font-size: 2.5em;
+  line-height: 100px;
+  color: #FFFFFF;
+  font-family: Arial;
+}
+
+.symbol-rectangle {
+  display: block;
+  position: relative;
+  text-align: center;
+  float: left;
+  margin: 50px;
+  width: 120px; 
+  height: 80px; 
+  border: 4px solid #FFFFFF;
+  border-radius: 20px;
+}
+
+.symbol-rectangle span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  font-size: 2.5em;
+  line-height: 80px;
+  color: #FFFFFF;
+  font-family: Arial;
+}
+
+/*********************************
+		Responsive Hacks
+*********************************/
+@media (max-width: 480px) {
+	html, body {
+		overflow-x:hidden;
+	}
+}
+
+@media (max-width: 768px) {
+	body {
+    padding: 0;
+  }
+
+  #scrollToTop {
+    top: 0;
+    bottom: auto;
+    right: 0;
+    width: 40px;
+  }
+
+	.navbar-left {
+		bottom: 0;
+		top:auto;
+		border-bottom: 3px solid #999999;
+    opacity: 0.9;
+    background-color: #000000;
+	}
+
+	.navbar-left ul li a:link,
+	.navbar-left ul li a:visited {
+    font-size: 15px;
+		padding: 5px 7px;
+	}
+
+	.page {}
+
+	.container {
+		padding-left: 20px;
+		padding-right: 20px;
+	}
+
+	.page h1 {
+		font-size:36px;
+		line-height: 1;
+		margin: 20px 0;
+		text-align: left;
+	}
+
+	.page h2 {
+		font-size:22px;
+		line-height: 1.2;
+		margin: 10px 0;
+		text-align: left;
+	}
+
+	.page h3 {
+		line-height: 1;
+		font-size:18px;
+		text-align: left;
+	}
+
+	.page p {
+		text-align: left;
+	}
+}

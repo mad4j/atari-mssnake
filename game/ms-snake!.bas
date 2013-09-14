@@ -50,9 +50,9 @@
 
     const GAMEOVER_NTSC_FOREG = $4E
     const GAMEOVER_NTSC_BACKG = $00
-
+    
     const TITLE1_NTSC_COLOR = $DA
-    const TITLE2_NTSC_COLOR = $8C
+    const TITLE2_NTSC_COLOR = $40
 
     ; PAL60 color palette
     const FOREG_PAL_COLOR = $52
@@ -65,7 +65,7 @@
 
     const TITLE1_PAL_COLOR = $3A
 
-    const TITLE2_PAL_COLOR = $3A
+    const TITLE2_PAL_COLOR = $60
 
     ; max snake length
     const MAX_LEN = 192
@@ -77,7 +77,7 @@
     dim bits2_GameOverFlag = z
 
     ; counting stuff for screen delay logic
-    
+
     dim frames = s
     dim seconds = c
 

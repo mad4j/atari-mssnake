@@ -13,7 +13,7 @@
     ; use 32KB ROM (8 banks) with Super Chip RAM
     set romsize 32kSC
 
-    ; TODO: verify if needed
+    ; set smart bank switching
     set smartbranching on
     
     ; remove horizontal scan lines
@@ -52,7 +52,7 @@
     const GAMEOVER_NTSC_BACKG = $00
 
     const TITLE1_NTSC_COLOR = $DA
-
+    const TITLE2_NTSC_COLOR = $8C
 
     ; PAL60 color palette
     const FOREG_PAL_COLOR = $52
@@ -65,9 +65,7 @@
 
     const TITLE1_PAL_COLOR = $3A
 
-    ; TODO: define PAL60 palette
-    ; TODO: use the BW/Col switch in order to change NTSC/PAL palette
-
+    const TITLE2_PAL_COLOR = $3A
 
     ; max snake length
     const MAX_LEN = 192
@@ -78,8 +76,10 @@
     dim bits1_DebounceFireButton = z
     dim bits2_GameOverFlag = z
 
-    dim _Master_Counter = s
-    dim _Frame_Counter = c
+    ; counting stuff for screen delay logic
+    
+    dim frames = s
+    dim seconds = c
 
     ; how fast ms-snake is running?
     dim speed = s
@@ -126,16 +126,21 @@
     dim shakescreen = m
     dim shaking_effect = n
 
-    dim bmp_48x1_1_color = o
+    ; needed to change colors on title screen
+    dim bmp_48x1_2_color = s
+    dim bmp_48x1_3_color = t
 
+    ; references to score values (three chunks of two digits)
     dim score1 = score
     dim score2 = score+1
     dim score3 = score+2
 
+    ; high score value (three chunks of two digits)
     dim highScore1 = p
     dim highScore2 = q
     dim highScore3 = r
 
+    ; reset high score value
     highScore1 = 0
     highScore2 = 0
     highScore3 = 0
@@ -157,11 +162,12 @@ _GameInit
 
 _TitleScreenSetup
 
+    ; display high scores in title screen
     score1 = highScore1
     score2 = highScore2
     score3 = highScore3
 
-    if switchbw then scorecolor = SCORE_NTSC_COLOR else scorecolor = SCORE_PAL_COLOR
+    if switchbw then scorecolor = SCORE_PAL_COLOR else scorecolor = SCORE_NTSC_COLOR
     
     ; debounce the reset switch
     bits0_DebounceReset{0} = 1
@@ -176,7 +182,8 @@ _TitleScreenSetup
 
 _TitleScreenLoop
 
-    if switchbw then bmp_48x1_1_color = TITLE1_NTSC_COLOR else bmp_48x1_1_color = TITLE1_PAL_COLOR
+    if switchbw then bmp_48x1_2_color = TITLE1_PAL_COLOR else bmp_48x1_2_color = TITLE1_NTSC_COLOR
+    if switchbw then bmp_48x1_3_color = TITLE2_PAL_COLOR else bmp_48x1_3_color = TITLE2_NTSC_COLOR
 
     gosub titledrawscreen bank4
 
@@ -277,7 +284,7 @@ end
 
 _MainLoop
 
-    if switchbw then COLUP0 = FOOD_NTSC_COLOR else COLUP0 = FOOD_PAL_COLOR
+    if switchbw then COLUP0 = FOOD_PAL_COLOR else COLUP0 = FOOD_NTSC_COLOR
 
     bits1_DebounceFireButton{1} = 0
 
@@ -301,8 +308,8 @@ _SkipMainReset
     ; check to see if the game is over
     if bits2_GameOverFlag{2} then goto _GameOverSetup bank3
 
-    if switchbw then COLUPF = FOREG_NTSC_COLOR else COLUPF = FOREG_PAL_COLOR
-    if switchbw then COLUBK = BACKG_NTSC_COLOR else COLUBK = BACKG_PAL_COLOR
+    if switchbw then COLUPF = FOREG_PAL_COLOR else COLUPF = FOREG_NTSC_COLOR
+    if switchbw then COLUBK = BACKG_PAL_COLOR else COLUBK = BACKG_NTSC_COLOR
 
     pfpixel headX headY on
     if grown=0 then pfpixel tailX tailY off
@@ -535,8 +542,8 @@ end
 _GameOverLoop
 
     ; set right color values
-    if switchbw then COLUPF = GAMEOVER_NTSC_FOREG else COLUPF = GAMEOVER_PAL_FOREG
-    if switchbw then COLUBK = GAMEOVER_NTSC_BACKG else COLUBK = GAMEOVER_PAL_BACKG
+    if switchbw then COLUPF = GAMEOVER_PAL_FOREG else COLUPF = GAMEOVER_NTSC_FOREG
+    if switchbw then COLUBK = GAMEOVER_PAL_BACKG else COLUBK = GAMEOVER_NTSC_BACKG
 
     ; rationale
     ; pluggable mini-kernels should modify pre-configured colors
@@ -550,7 +557,7 @@ _GameOverLoop
 _SkipSound2
     if !crashSound then AUDV0 = 0
 
-    _Master_Counter = _Master_Counter + 1
+    frames = frames + 1
 
     ; manage shaking effect
     if shaking_effect = 0 then goto _SkipShake
@@ -559,28 +566,20 @@ _SkipSound2
 
 _SkipShake
 
-   rem  ````````````````````````````````````````````````````````````````
-   rem  `  The master counter resets every 2 seconds.
-   rem  `
-   if _Master_Counter < 120 then goto _Skip20Counter
+   ; frames counter resets every second (60 frames)
+   if frames < 60 then goto _SkipCounter
 
-   _Master_Counter = 0
+   ; frames counter reset
+   frames = 0
 
+   ; increment seconds counters on frame counter reset
+   seconds = seconds + 1
 
-   rem  ````````````````````````````````````````````````````````````````
-   rem  `  The frame counter increments every 2 seconds.
-   rem  `
-   _Frame_Counter = _Frame_Counter + 1
-
-   rem  ````````````````````````````````````````````````````````````````
-   rem  `  If _Frame_Counter reaches 10 (20 seconds), the program resets
-   rem  `  and goes to the title screen.
-   rem  `
-   if _Frame_Counter = 5 then bits2_GameOverFlag{2} = 0 : goto _GameInit bank1
+   ; remain on gameover screen for 5 seconds
+   if seconds = 5 then bits2_GameOverFlag{2} = 0 : goto _GameInit bank1
 
 
-_Skip20Counter
-
+_SkipCounter
 
     drawscreen
 

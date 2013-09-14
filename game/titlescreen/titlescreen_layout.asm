@@ -11,20 +11,22 @@
 	;draw_96x2_2
 	;draw_96x2_3
 
+    draw_48x2_1 ; title
+
 	; draw_48x1_1 ; head-only
 	draw_48x1_2  ;  body and title
 
-	draw_space 10
+	draw_space 5
 	draw_48x1_3
 
-	;draw_48x2_1
+	
 	;draw_48x2_2
 	;draw_48x2_3
 	;draw_player
 
 	;draw_gameselect
 
-	draw_space 10
+	draw_space 5
 	draw_score
  ENDM
 

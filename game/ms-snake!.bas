@@ -52,7 +52,7 @@
     const GAMEOVER_NTSC_BACKG = $00
     
     const TITLE1_NTSC_COLOR = $DA
-    const TITLE2_NTSC_COLOR = $40
+    const TITLE2_NTSC_COLOR = $96
 
     ; PAL60 color palette
     const FOREG_PAL_COLOR = $52
@@ -65,7 +65,7 @@
 
     const TITLE1_PAL_COLOR = $3A
 
-    const TITLE2_PAL_COLOR = $60
+    const TITLE2_PAL_COLOR = $96
 
     ; max snake length
     const MAX_LEN = 192
@@ -75,9 +75,9 @@
     dim bits0_DebounceReset = z
     dim bits1_DebounceFireButton = z
     dim bits2_GameOverFlag = z
+    dim bits3_TitleSoundFlag = z
 
     ; counting stuff for screen delay logic
-
     dim frames = s
     dim seconds = c
 
@@ -122,12 +122,15 @@
     dim eatSound = f
     dim crashSound = f
 
+    dim musicDataIndex = c
+    dim noteDuration = l
+
     ; activate screen shake effect
     dim shakescreen = m
     dim shaking_effect = n
 
     ; needed to change colors on title screen
-    dim bmp_48x1_2_color = r
+    dim bmp_48x1_2_color = u
     dim bmp_48x1_3_color = t
 
     dim bmp_48x1_2_index = o
@@ -184,6 +187,14 @@ _TitleScreenSetup
     ; start frame counting
     frames = 0
 
+    ; activate title screen sound
+    bits3_TitleSoundFlag{3} = 1
+
+    ; initialize sound control
+    musicDataIndex = 0
+    noteDuration = 1
+
+
 _TitleScreenLoop
 
     ; check title colors
@@ -191,7 +202,10 @@ _TitleScreenLoop
     if switchbw then bmp_48x1_3_color = TITLE2_PAL_COLOR else bmp_48x1_3_color = TITLE2_NTSC_COLOR
 
     ; swap aninamtion frames
-    if frames<210 then bmp_48x1_2_index=0 else bmp_48x1_2_index=118
+    if frames<210 then bmp_48x1_2_index=0 else bmp_48x1_2_index=117
+
+    ; goto _GetMusic
+_GotMusic
 
     gosub titledrawscreen bank4
 
@@ -216,6 +230,44 @@ _SkipTitleResetFire
 
     ; return at the beginning of the loop
     goto _TitleScreenLoop
+
+_GetMusic
+
+    ; play title soundtrack only once
+    if !bits3_TitleSoundFlag{3} then AUDV0=0 : AUDV1=0 : goto _GotMusic
+
+    ; check for end of current note
+    noteDuration = noteDuration-1
+    if noteDuration>0 then goto _GotMusic
+
+    ; retrieve channel 0 data
+    temp4 = musicData[musicDataIndex] : musicDataIndex = musicDataIndex + 1
+    temp5 = musicData[musicDataIndex] : musicDataIndex = musicDataIndex + 1
+    temp6 = musicData[musicDataIndex] : musicDataIndex = musicDataIndex + 1
+
+
+    ; check for end of data
+    if temp4=255 then noteDuration=1 : bits3_TitleSoundFlag{3}=0 : goto _GotMusic
+
+    ; play channel 0
+    AUDV0 = temp4
+    AUDC0 = temp5
+    AUDF0 = temp6
+
+    ; retrieve channel 1 data
+    temp4 = musicData[musicDataIndex] : musicDataIndex = musicDataIndex + 1
+    temp5 = musicData[musicDataIndex] : musicDataIndex = musicDataIndex + 1
+    temp6 = musicData[musicDataIndex] : musicDataIndex = musicDataIndex + 1
+
+    ; play channel 1
+    AUDV1 = temp4
+    AUDC1 = temp5
+    AUDF1 = temp6
+
+    ; set note duration
+    noteDuration = musicData[musicDataIndex] : musicDataIndex = musicDataIndex + 1
+
+    goto _GotMusic
 
 
 /**
@@ -618,7 +670,61 @@ _SkipGameOverReset
     include "titlescreen/asm/titlescreen.asm"
 end
 
+
+/**
+  * START OF BANK 5
+  * ---------------
+  */
+
     bank 5
+
+    ; Music Data Block Format:
+    ;  v,c,f (channel 0)
+    ;  v,c,f (channel 1) 
+    ;  d
+    ;
+    ; Explanation:
+    ; v - volume (0 to 15)
+    ; c - control [a.k.a. tone, voice, and distortion] (0 to 15)
+    ; f - frequency (0 to 31)
+    ; d - duration
+
+    data musicData
+    8,4,15
+    0,0,0
+    15
+    2,4,15
+    0,0,0
+    8
+    8,4,15
+    0,0,0
+    20
+    2,4,15
+    0,0,0
+    8
+    8,4,15
+    0,0,0
+    20
+    2,4,15
+    0,0,0
+    8
+    8,4,17
+    0,0,0
+    20
+    2,4,17
+    0,0,0
+    8
+    8,4,19
+    0,0,0
+    20
+    2,4,19
+    0,0,0
+    8
+
+    255
+end
+;   goto _GotMusic
+
 
     bank 6
 

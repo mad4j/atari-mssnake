@@ -43,15 +43,27 @@
 
 
     ; NTSC color palette
-    const FOREG_COLOR = $C2
-    const BACKG_COLOR = $00
-    const SCORE_COLOR = $2C
-    const FOOD_COLOR  = $40
+    const FOREG_NTSC_COLOR = $C2
+    const BACKG_NTSC_COLOR = $00
+    const SCORE_NTSC_COLOR = $2C
+    const FOOD_NTSC_COLOR  = $40
 
-    const GAMEOVER_FOREG = $4E
-    const GAMEOVER_BACKG = $00
+    const GAMEOVER_NTSC_FOREG = $4E
+    const GAMEOVER_NTSC_BACKG = $00
 
-    const TITLE_COL1 = $DA
+    const TITLE1_NTSC_COLOR = $DA
+
+
+    ; PAL60 color palette
+    const FOREG_PAL_COLOR = $52
+    const BACKG_PAL_COLOR = $00
+    const SCORE_PAL_COLOR = $2C
+    const FOOD_PAL_COLOR  = $60
+
+    const GAMEOVER_PAL_FOREG = $6E
+    const GAMEOVER_PAL_BACKG = $00
+
+    const TITLE1_PAL_COLOR = $3A
 
     ; TODO: define PAL60 palette
     ; TODO: use the BW/Col switch in order to change NTSC/PAL palette
@@ -149,7 +161,7 @@ _TitleScreenSetup
     score2 = highScore2
     score3 = highScore3
 
-    scorecolor = SCORE_COLOR
+    if switchbw then scorecolor = SCORE_NTSC_COLOR else scorecolor = SCORE_PAL_COLOR
     
     ; debounce the reset switch
     bits0_DebounceReset{0} = 1
@@ -164,7 +176,7 @@ _TitleScreenSetup
 
 _TitleScreenLoop
 
-    bmp_48x1_1_color = TITLE_COL1
+    if switchbw then bmp_48x1_1_color = TITLE1_NTSC_COLOR else bmp_48x1_1_color = TITLE1_PAL_COLOR
 
     gosub titledrawscreen bank4
 
@@ -265,7 +277,7 @@ end
 
 _MainLoop
 
-    COLUP0 = FOOD_COLOR
+    if switchbw then COLUP0 = FOOD_NTSC_COLOR else COLUP0 = FOOD_PAL_COLOR
 
     bits1_DebounceFireButton{1} = 0
 
@@ -289,9 +301,8 @@ _SkipMainReset
     ; check to see if the game is over
     if bits2_GameOverFlag{2} then goto _GameOverSetup bank3
 
-    COLUPF = FOREG_COLOR
-
-    COLUBK = BACKG_COLOR
+    if switchbw then COLUPF = FOREG_NTSC_COLOR else COLUPF = FOREG_PAL_COLOR
+    if switchbw then COLUBK = BACKG_NTSC_COLOR else COLUBK = BACKG_PAL_COLOR
 
     pfpixel headX headY on
     if grown=0 then pfpixel tailX tailY off
@@ -524,8 +535,8 @@ end
 _GameOverLoop
 
     ; set right color values
-    COLUPF = GAMEOVER_FOREG
-    COLUBK = GAMEOVER_BACKG
+    if switchbw then COLUPF = GAMEOVER_NTSC_FOREG else COLUPF = GAMEOVER_PAL_FOREG
+    if switchbw then COLUBK = GAMEOVER_NTSC_BACKG else COLUBK = GAMEOVER_PAL_BACKG
 
     ; rationale
     ; pluggable mini-kernels should modify pre-configured colors

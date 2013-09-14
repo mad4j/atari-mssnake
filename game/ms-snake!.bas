@@ -186,13 +186,16 @@ _TitleScreenSetup
 
 _TitleScreenLoop
 
+    ; check title colors
     if switchbw then bmp_48x1_2_color = TITLE1_PAL_COLOR else bmp_48x1_2_color = TITLE1_NTSC_COLOR
     if switchbw then bmp_48x1_3_color = TITLE2_PAL_COLOR else bmp_48x1_3_color = TITLE2_NTSC_COLOR
 
+    ; swap aninamtion frames
     if frames<210 then bmp_48x1_2_index=0 else bmp_48x1_2_index=118
 
     gosub titledrawscreen bank4
 
+    ; increment frames counter
     frames=frames+1
     if frames>240 then frames=0
 

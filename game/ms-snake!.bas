@@ -127,8 +127,10 @@
     dim shaking_effect = n
 
     ; needed to change colors on title screen
-    dim bmp_48x1_2_color = s
+    dim bmp_48x1_2_color = r
     dim bmp_48x1_3_color = t
+
+    dim bmp_48x1_2_index = o
 
     ; references to score values (three chunks of two digits)
     dim score1 = score
@@ -179,13 +181,20 @@ _TitleScreenSetup
     ; It does double duty sometimes by debouncing
     ; the fire button too.
 
+    ; start frame counting
+    frames = 0
 
 _TitleScreenLoop
 
     if switchbw then bmp_48x1_2_color = TITLE1_PAL_COLOR else bmp_48x1_2_color = TITLE1_NTSC_COLOR
     if switchbw then bmp_48x1_3_color = TITLE2_PAL_COLOR else bmp_48x1_3_color = TITLE2_NTSC_COLOR
 
+    if frames<210 then bmp_48x1_2_index=0 else bmp_48x1_2_index=118
+
     gosub titledrawscreen bank4
+
+    frames=frames+1
+    if frames>240 then frames=0
 
     ; no button pressed then clear debounce bit
     if !switchreset && !joy0fire then bits0_DebounceReset{0} = 0 : goto _SkipTitleResetFire

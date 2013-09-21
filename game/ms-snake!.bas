@@ -8,12 +8,12 @@
  */
 
     ; use NTSC system (262 scanlines, 60Hz) 
-    set tv NTSC
+    set tv ntsc
 
     ; use 32KB ROM (8 banks) with Super Chip RAM
     set romsize 32kSC
 
-    ; set smart bank switching
+    ; smart bank switching
     set smartbranching on
     
     ; remove horizontal scan lines
@@ -26,11 +26,14 @@
     ; random numbers can slow down bank-switched games.
     ; This will speed things up.
 
-    ; use 24 rows playfiled (nearly square pixels)
+    ; use 24 rows playfield (nearly square pixels)
     const pfres = 24
+    const pfrowheight = 4
 
     ; use ALARMCLOCK font for score digits
-    const fontstyle = 4 ; ALARMCLOCK
+    const fontstyle = 4
+
+    ; const scorefade = 1
 
     ; use meangful names for directions values
     const NORTH = %00000000
@@ -64,7 +67,6 @@
     const GAMEOVER_PAL_BACKG = $00
 
     const TITLE1_PAL_COLOR = $3A
-
     const TITLE2_PAL_COLOR = $96
 
     ; max snake length
@@ -122,9 +124,6 @@
     dim eatSound = f
     dim crashSound = f
 
-    dim musicDataIndex = c
-    dim noteDuration = l
-
     ; activate screen shake effect
     dim shakescreen = m
     dim shaking_effect = n
@@ -132,7 +131,6 @@
     ; needed to change colors on title screen
     dim bmp_48x1_2_color = u
     dim bmp_48x1_3_color = t
-
     dim bmp_48x1_2_index = o
 
     ; references to score values (three chunks of two digits)
@@ -187,14 +185,6 @@ _TitleScreenSetup
     ; start frame counting
     frames = 0
 
-    ; activate title screen sound
-    bits3_TitleSoundFlag{3} = 1
-
-    ; initialize sound control
-    musicDataIndex = 0
-    noteDuration = 1
-
-
 _TitleScreenLoop
 
     ; check title colors
@@ -203,9 +193,6 @@ _TitleScreenLoop
 
     ; swap aninamtion frames
     if frames<210 then bmp_48x1_2_index=0 else bmp_48x1_2_index=117
-
-    ; goto _GetMusic
-_GotMusic
 
     gosub titledrawscreen bank4
 
@@ -230,44 +217,6 @@ _SkipTitleResetFire
 
     ; return at the beginning of the loop
     goto _TitleScreenLoop
-
-_GetMusic
-
-    ; play title soundtrack only once
-    if !bits3_TitleSoundFlag{3} then AUDV0=0 : AUDV1=0 : goto _GotMusic
-
-    ; check for end of current note
-    noteDuration = noteDuration-1
-    if noteDuration>0 then goto _GotMusic
-
-    ; retrieve channel 0 data
-    temp4 = musicData[musicDataIndex] : musicDataIndex = musicDataIndex + 1
-    temp5 = musicData[musicDataIndex] : musicDataIndex = musicDataIndex + 1
-    temp6 = musicData[musicDataIndex] : musicDataIndex = musicDataIndex + 1
-
-
-    ; check for end of data
-    if temp4=255 then noteDuration=1 : bits3_TitleSoundFlag{3}=0 : goto _GotMusic
-
-    ; play channel 0
-    AUDV0 = temp4
-    AUDC0 = temp5
-    AUDF0 = temp6
-
-    ; retrieve channel 1 data
-    temp4 = musicData[musicDataIndex] : musicDataIndex = musicDataIndex + 1
-    temp5 = musicData[musicDataIndex] : musicDataIndex = musicDataIndex + 1
-    temp6 = musicData[musicDataIndex] : musicDataIndex = musicDataIndex + 1
-
-    ; play channel 1
-    AUDV1 = temp4
-    AUDC1 = temp5
-    AUDF1 = temp6
-
-    ; set note duration
-    noteDuration = musicData[musicDataIndex] : musicDataIndex = musicDataIndex + 1
-
-    goto _GotMusic
 
 
 /**
@@ -389,13 +338,16 @@ _SkipSound1
 
     counter = counter+1
     if counter > speed then gosub _UpdateSnake bank3
-
     if headX=foodX && headY=foodY then gosub _UpdateEat bank3    
 
-    if joy0up then headDir=NORTH
-    if joy0down then headDir=SOUTH
-    if joy0left then headDir=WEST
-    if joy0right then headDir=EAST    
+    ; verify change of directions
+    if joy0up && headDir<>SOUTH then headDir=NORTH
+    if joy0down && headDir<>NORTH then headDir=SOUTH
+    if joy0left && headDir<>EAST then headDir=WEST
+    if joy0right && headDir<>WEST then headDir=EAST    
+
+    ; rationale: it is not possible to make turns of 180 degree
+    ; in order to avoid auto-biting
 
     goto _MainLoop
 
@@ -514,7 +466,6 @@ _SkipGrownIncrement
  */
 _GameOverSetup
 
-
     ; remove player1 from the playfield
     player0x = 0 : player0y = 0
 
@@ -539,6 +490,9 @@ _GameOverSetup
     goto __Skip_High_Score
 
 __New_High_Score
+
+    ; activate title screen sound
+    bits3_TitleSoundFlag{3} = 1
 
     highScore1 = score1
     highScore2 = score2
@@ -658,7 +612,6 @@ _SkipGameOverReset
 
     goto _GameOverLoop
 
-
 /**
   * START OF BANK 4
   * ---------------
@@ -670,61 +623,7 @@ _SkipGameOverReset
     include "titlescreen/asm/titlescreen.asm"
 end
 
-
-/**
-  * START OF BANK 5
-  * ---------------
-  */
-
     bank 5
-
-    ; Music Data Block Format:
-    ;  v,c,f (channel 0)
-    ;  v,c,f (channel 1) 
-    ;  d
-    ;
-    ; Explanation:
-    ; v - volume (0 to 15)
-    ; c - control [a.k.a. tone, voice, and distortion] (0 to 15)
-    ; f - frequency (0 to 31)
-    ; d - duration
-
-    data musicData
-    8,4,15
-    0,0,0
-    15
-    2,4,15
-    0,0,0
-    8
-    8,4,15
-    0,0,0
-    20
-    2,4,15
-    0,0,0
-    8
-    8,4,15
-    0,0,0
-    20
-    2,4,15
-    0,0,0
-    8
-    8,4,17
-    0,0,0
-    20
-    2,4,17
-    0,0,0
-    8
-    8,4,19
-    0,0,0
-    20
-    2,4,19
-    0,0,0
-    8
-
-    255
-end
-;   goto _GotMusic
-
 
     bank 6
 

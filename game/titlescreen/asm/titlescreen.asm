@@ -16,7 +16,7 @@ title_do_vertical_sync
 	sta WSYNC ;one line with VSYNC
 	sta VSYNC ;enable VSYNC
 	sta WSYNC ;one line with VSYNC
-	;;; sta WSYNC ;one line with VSYNC
+	sta WSYNC ;one line with VSYNC
 	lda #0
 	sta WSYNC ;one line with VSYNC
 	sta VSYNC ;turn off VSYNC

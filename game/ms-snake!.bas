@@ -7,8 +7,8 @@
  * Maria Segnalini <maria.segnalini@bgmail.com>
  */
 
-    ; use PAL system (312 scanlines, 50Hz) 
-    set tv pal
+    ; use NTSC system (262 scanlines, 60Hz) 
+    set tv ntsc
 
     ; use 32KB ROM (8 banks) with Super Chip RAM
     set romsize 32kSC
@@ -170,7 +170,7 @@ _TitleScreenSetup
     score2 = highScore2
     score3 = highScore3
 
-    if !switchbw then scorecolor = SCORE_PAL_COLOR else scorecolor = SCORE_NTSC_COLOR
+    if switchbw then scorecolor = SCORE_PAL_COLOR else scorecolor = SCORE_NTSC_COLOR
     
     ; debounce the reset switch
     bits0_DebounceReset{0} = 1
@@ -188,8 +188,8 @@ _TitleScreenSetup
 _TitleScreenLoop
 
     ; check title colors
-    if !switchbw then bmp_48x1_2_color = TITLE1_PAL_COLOR else bmp_48x1_2_color = TITLE1_NTSC_COLOR
-    if !switchbw then bmp_48x1_3_color = TITLE2_PAL_COLOR else bmp_48x1_3_color = TITLE2_NTSC_COLOR
+    if switchbw then bmp_48x1_2_color = TITLE1_PAL_COLOR else bmp_48x1_2_color = TITLE1_NTSC_COLOR
+    if switchbw then bmp_48x1_3_color = TITLE2_PAL_COLOR else bmp_48x1_3_color = TITLE2_NTSC_COLOR
 
     ; swap aninamtion frames
     if frames<210 then bmp_48x1_2_index=0 else bmp_48x1_2_index=117
@@ -297,7 +297,7 @@ end
 
 _MainLoop
 
-    if !switchbw then COLUP0 = FOOD_PAL_COLOR else COLUP0 = FOOD_NTSC_COLOR
+    if switchbw then COLUP0 = FOOD_PAL_COLOR else COLUP0 = FOOD_NTSC_COLOR
 
     bits1_DebounceFireButton{1} = 0
 
@@ -321,8 +321,8 @@ _SkipMainReset
     ; check to see if the game is over
     if bits2_GameOverFlag{2} then goto _GameOverSetup bank3
 
-    if !switchbw then COLUPF = FOREG_PAL_COLOR else COLUPF = FOREG_NTSC_COLOR
-    if !switchbw then COLUBK = BACKG_PAL_COLOR else COLUBK = BACKG_NTSC_COLOR
+    if switchbw then COLUPF = FOREG_PAL_COLOR else COLUPF = FOREG_NTSC_COLOR
+    if switchbw then COLUBK = BACKG_PAL_COLOR else COLUBK = BACKG_NTSC_COLOR
 
     pfpixel headX headY on
     if grown=0 then pfpixel tailX tailY off
@@ -560,8 +560,8 @@ end
 _GameOverLoop
 
     ; set right color values
-    if !switchbw then COLUPF = GAMEOVER_PAL_FOREG else COLUPF = GAMEOVER_NTSC_FOREG
-    if !switchbw then COLUBK = GAMEOVER_PAL_BACKG else COLUBK = GAMEOVER_NTSC_BACKG
+    if switchbw then COLUPF = GAMEOVER_PAL_FOREG else COLUPF = GAMEOVER_NTSC_FOREG
+    if switchbw then COLUBK = GAMEOVER_PAL_BACKG else COLUBK = GAMEOVER_NTSC_BACKG
 
     ; rationale
     ; pluggable mini-kernels should modify pre-configured colors

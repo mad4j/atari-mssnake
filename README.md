@@ -6,8 +6,8 @@ by Daniele Olmisani, Luca Olmisani, Maria Segnalini
 
 Follow the discussion thread regarding **Ms Snake!** on [AtariAge](http://atariage.com/forums/topic/215913-ms-snake-is-coming/)
 
-[Play!!!](http://mad4j.github.io/ms-snake/emulator/player.html)
+[Play!!!](http://mad4j.github.io/atari-mssnake/emulator/player.html)
 
-![Cover](http://mad4j.github.io/ms-snake/images/cover-small.jpg)
+![Cover](http://mad4j.github.io/atari-mssnake/images/cover-small.jpg)
 
 

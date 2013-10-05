@@ -8,7 +8,7 @@
  */
 
     ; use NTSC system (262 scanlines, 60Hz) 
-    set tv ntsc
+    set tv pal
 
     ; use 32KB ROM (8 banks) with Super Chip RAM
     set romsize 32kSC

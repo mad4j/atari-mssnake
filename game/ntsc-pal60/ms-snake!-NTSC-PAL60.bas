@@ -46,10 +46,10 @@
 
 
     ; NTSC color palette
-    const FOREG_NTSC_COLOR = $C2
+    const FOREG_NTSC_COLOR = $CA
     const BACKG_NTSC_COLOR = $00
     const SCORE_NTSC_COLOR = $2C
-    const FOOD_NTSC_COLOR  = $40
+    const FOOD_NTSC_COLOR  = $4A
 
     const GAMEOVER_NTSC_FOREG = $4E
     const GAMEOVER_NTSC_BACKG = $00
@@ -58,10 +58,10 @@
     const TITLE2_NTSC_COLOR = $96
 
     ; PAL60 color palette
-    const FOREG_PAL_COLOR = $52
+    const FOREG_PAL_COLOR = $5A
     const BACKG_PAL_COLOR = $00
     const SCORE_PAL_COLOR = $2C
-    const FOOD_PAL_COLOR  = $60
+    const FOOD_PAL_COLOR  = $6A
 
     const GAMEOVER_PAL_FOREG = $6E
     const GAMEOVER_PAL_BACKG = $00
@@ -324,11 +324,14 @@ _SkipMainReset
     if switchbw then COLUPF = FOREG_PAL_COLOR else COLUPF = FOREG_NTSC_COLOR
     if switchbw then COLUBK = BACKG_PAL_COLOR else COLUBK = BACKG_NTSC_COLOR
 
+    ; advance head position
     pfpixel headX headY on
+
+    ; if no growing then advance tail position
     if grown=0 then pfpixel tailX tailY off
 
+    ; if no food on game field then compute new food position
     if foodX=0 && foodY=0 then gosub _UpdateFood bank3
-    ; pfpixel foodX foodY on
 
     if eatSound=0 then goto _SkipSound1
     AUDV0 = 8 : AUDC0 = 4 : AUDF0 = 19
@@ -478,6 +481,7 @@ _GameOverSetup
     ; activate shake effect
     shaking_effect = 25
 
+    ; verify if a new high score is achived
     if score1 > highScore1 then goto __New_High_Score
     if score1 < highScore1 then goto __Skip_High_Score
 

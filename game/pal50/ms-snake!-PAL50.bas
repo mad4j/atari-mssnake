@@ -7,6 +7,8 @@
  * Maria Segnalini <maria.segnalini@bgmail.com>
  */
 
+    temp1=temp1
+
     ; use NTSC system (262 scanlines, 60Hz) 
     set tv pal
 
@@ -33,8 +35,6 @@
     ; use ALARMCLOCK font for score digits
     const fontstyle = 4
 
-    ; const scorefade = 1
-
     ; use meangful names for directions values
     const NORTH = %00000000
     const EAST  = %01010101
@@ -42,14 +42,14 @@
     const WEST  = %11111111
 
     ; rationale:
-    ; each byte will store 4 directions
-
+    ; each byte will store the same direction
+    ; reapeted 4 times
 
     ; NTSC color palette
-    const FOREG_NTSC_COLOR = $C2
+    const FOREG_NTSC_COLOR = $CA
     const BACKG_NTSC_COLOR = $00
     const SCORE_NTSC_COLOR = $2C
-    const FOOD_NTSC_COLOR  = $40
+    const FOOD_NTSC_COLOR  = $4A
 
     const GAMEOVER_NTSC_FOREG = $4E
     const GAMEOVER_NTSC_BACKG = $00
@@ -58,10 +58,10 @@
     const TITLE2_NTSC_COLOR = $96
 
     ; PAL60 color palette
-    const FOREG_PAL_COLOR = $52
+    const FOREG_PAL_COLOR = $5A
     const BACKG_PAL_COLOR = $00
     const SCORE_PAL_COLOR = $2C
-    const FOOD_PAL_COLOR  = $60
+    const FOOD_PAL_COLOR  = $6A
 
     const GAMEOVER_PAL_FOREG = $6E
     const GAMEOVER_PAL_BACKG = $00
@@ -70,7 +70,7 @@
     const TITLE2_PAL_COLOR = $96
 
     ; max snake length
-    const MAX_LEN = 192
+    const SNAKE_MAX_LEN = 192
 
     ; all-purpose bits for various jobs
     dim bits = z
@@ -85,7 +85,7 @@
 
     ; how fast ms-snake is running?
     dim speed = s
- 	dim counter = c
+    dim counter = c
 
     ; position of food
     dim foodX = a
@@ -170,7 +170,7 @@ _TitleScreenSetup
     score2 = highScore2
     score3 = highScore3
 
-    if switchbw then scorecolor = SCORE_PAL_COLOR else scorecolor = SCORE_NTSC_COLOR
+    if !switchbw then scorecolor = SCORE_PAL_COLOR else scorecolor = SCORE_NTSC_COLOR
     
     ; debounce the reset switch
     bits0_DebounceReset{0} = 1
@@ -188,8 +188,8 @@ _TitleScreenSetup
 _TitleScreenLoop
 
     ; check title colors
-    if switchbw then bmp_48x1_2_color = TITLE1_PAL_COLOR else bmp_48x1_2_color = TITLE1_NTSC_COLOR
-    if switchbw then bmp_48x1_3_color = TITLE2_PAL_COLOR else bmp_48x1_3_color = TITLE2_NTSC_COLOR
+    if !switchbw then bmp_48x1_2_color = TITLE1_PAL_COLOR else bmp_48x1_2_color = TITLE1_NTSC_COLOR
+    if !switchbw then bmp_48x1_3_color = TITLE2_PAL_COLOR else bmp_48x1_3_color = TITLE2_NTSC_COLOR
 
     ; swap aninamtion frames
     if frames<210 then bmp_48x1_2_index=0 else bmp_48x1_2_index=117
@@ -225,6 +225,8 @@ _SkipTitleResetFire
   */
 
     bank 2
+
+    temp1 = temp1
 
 _MainLoopSetup
 
@@ -297,7 +299,7 @@ end
 
 _MainLoop
 
-    if switchbw then COLUP0 = FOOD_PAL_COLOR else COLUP0 = FOOD_NTSC_COLOR
+    if !switchbw then COLUP0 = FOOD_PAL_COLOR else COLUP0 = FOOD_NTSC_COLOR
 
     bits1_DebounceFireButton{1} = 0
 
@@ -321,14 +323,17 @@ _SkipMainReset
     ; check to see if the game is over
     if bits2_GameOverFlag{2} then goto _GameOverSetup bank3
 
-    if switchbw then COLUPF = FOREG_PAL_COLOR else COLUPF = FOREG_NTSC_COLOR
-    if switchbw then COLUBK = BACKG_PAL_COLOR else COLUBK = BACKG_NTSC_COLOR
+    if !switchbw then COLUPF = FOREG_PAL_COLOR else COLUPF = FOREG_NTSC_COLOR
+    if !switchbw then COLUBK = BACKG_PAL_COLOR else COLUBK = BACKG_NTSC_COLOR
 
+    ; advance head position
     pfpixel headX headY on
+
+    ; if no growing then advance tail position
     if grown=0 then pfpixel tailX tailY off
 
+    ; if no food on game field then compute new food position
     if foodX=0 && foodY=0 then gosub _UpdateFood bank3
-    ; pfpixel foodX foodY on
 
     if eatSound=0 then goto _SkipSound1
     AUDV0 = 8 : AUDC0 = 4 : AUDF0 = 19
@@ -359,6 +364,8 @@ _SkipSound1
  
     bank 3
 
+    temp1 = temp1
+
     data MASKS
     %00000011, %00001100, %00110000, %11000000
 end    
@@ -369,13 +376,13 @@ _UpdateSnake
     if grown>0 then grown=grown-1 : length=length+1 else gosub _UpdateTail
 
     ; ms-snake speed depends on its length
-    speed = (MAX_LEN-length)/16
+    speed = (SNAKE_MAX_LEN-length)/16
 
     gosub _UpdateHead
 
     ; rationale:
     ; update the tail before the head in order to save one memory location
-    ; in this way, when MAX_LEN is reached, the location freed by tail
+    ; in this way, when SNAKE_MAX_LEN is reached, the location freed by tail
     ; will be occupied by the head
 
     return
@@ -387,7 +394,7 @@ _UpdateHead
     if headDir = WEST then headX = headX-1
 
     tailStart=tailStart+1
-    if tailStart=MAX_LEN then tailStart=0
+    if tailStart=SNAKE_MAX_LEN then tailStart=0
 
     temp1 = tailStart / 4
     temp2 = tailStart & %00000011
@@ -416,7 +423,7 @@ _UpdateTail
     if temp3 = WEST & MASKS[temp2] then tailX = tailX-1
 
     tailEnd=tailEnd+1
-    if tailEnd=MAX_LEN then tailEnd=0
+    if tailEnd=SNAKE_MAX_LEN then tailEnd=0
 
     return
 
@@ -441,8 +448,8 @@ _UpdateFood
 _UpdateEat
     score=score+1
 
-    ; no more grown if MAX_LEN will be reached
-    if length+grown = MAX_LEN then goto _SkipGrownIncrement
+    ; no more grown if SNAKE_MAX_LEN will be reached
+    if length+grown = SNAKE_MAX_LEN then goto _SkipGrownIncrement
     
     ; increment ms-snake length
     grown=grown+1
@@ -478,6 +485,7 @@ _GameOverSetup
     ; activate shake effect
     shaking_effect = 25
 
+    ; verify if a new high score is achived
     if score1 > highScore1 then goto __New_High_Score
     if score1 < highScore1 then goto __Skip_High_Score
 
@@ -560,8 +568,8 @@ end
 _GameOverLoop
 
     ; set right color values
-    if switchbw then COLUPF = GAMEOVER_PAL_FOREG else COLUPF = GAMEOVER_NTSC_FOREG
-    if switchbw then COLUBK = GAMEOVER_PAL_BACKG else COLUBK = GAMEOVER_NTSC_BACKG
+    if !switchbw then COLUPF = GAMEOVER_PAL_FOREG else COLUPF = GAMEOVER_NTSC_FOREG
+    if !switchbw then COLUBK = GAMEOVER_PAL_BACKG else COLUBK = GAMEOVER_NTSC_BACKG
 
     ; rationale
     ; pluggable mini-kernels should modify pre-configured colors
@@ -618,6 +626,8 @@ _SkipGameOverReset
   */
 
     bank 4
+
+    temp1 = temp1
 
     asm
     include "titlescreen/asm/titlescreen.asm"

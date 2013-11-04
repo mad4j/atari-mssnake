@@ -7,6 +7,8 @@
  * Maria Segnalini <maria.segnalini@bgmail.com>
  */
 
+    temp1=temp1
+
     ; use NTSC system (262 scanlines, 60Hz) 
     set tv ntsc
 
@@ -33,8 +35,6 @@
     ; use ALARMCLOCK font for score digits
     const fontstyle = 4
 
-    ; const scorefade = 1
-
     ; use meangful names for directions values
     const NORTH = %00000000
     const EAST  = %01010101
@@ -42,8 +42,8 @@
     const WEST  = %11111111
 
     ; rationale:
-    ; each byte will store 4 directions
-
+    ; each byte will store the same direction
+    ; reapeted 4 times
 
     ; NTSC color palette
     const FOREG_NTSC_COLOR = $CA
@@ -70,7 +70,7 @@
     const TITLE2_PAL_COLOR = $96
 
     ; max snake length
-    const MAX_LEN = 192
+    const SNAKE_MAX_LEN = 192
 
     ; all-purpose bits for various jobs
     dim bits = z
@@ -226,6 +226,8 @@ _SkipTitleResetFire
 
     bank 2
 
+    temp1 = temp1
+
 _MainLoopSetup
 
     ; reset bouncing bits
@@ -362,6 +364,8 @@ _SkipSound1
  
     bank 3
 
+    temp1 = temp1
+
     data MASKS
     %00000011, %00001100, %00110000, %11000000
 end    
@@ -372,13 +376,13 @@ _UpdateSnake
     if grown>0 then grown=grown-1 : length=length+1 else gosub _UpdateTail
 
     ; ms-snake speed depends on its length
-    speed = (MAX_LEN-length)/16
+    speed = (SNAKE_MAX_LEN-length)/16
 
     gosub _UpdateHead
 
     ; rationale:
     ; update the tail before the head in order to save one memory location
-    ; in this way, when MAX_LEN is reached, the location freed by tail
+    ; in this way, when SNAKE_MAX_LEN is reached, the location freed by tail
     ; will be occupied by the head
 
     return
@@ -390,7 +394,7 @@ _UpdateHead
     if headDir = WEST then headX = headX-1
 
     tailStart=tailStart+1
-    if tailStart=MAX_LEN then tailStart=0
+    if tailStart=SNAKE_MAX_LEN then tailStart=0
 
     temp1 = tailStart / 4
     temp2 = tailStart & %00000011
@@ -419,7 +423,7 @@ _UpdateTail
     if temp3 = WEST & MASKS[temp2] then tailX = tailX-1
 
     tailEnd=tailEnd+1
-    if tailEnd=MAX_LEN then tailEnd=0
+    if tailEnd=SNAKE_MAX_LEN then tailEnd=0
 
     return
 
@@ -444,8 +448,8 @@ _UpdateFood
 _UpdateEat
     score=score+1
 
-    ; no more grown if MAX_LEN will be reached
-    if length+grown = MAX_LEN then goto _SkipGrownIncrement
+    ; no more grown if SNAKE_MAX_LEN will be reached
+    if length+grown = SNAKE_MAX_LEN then goto _SkipGrownIncrement
     
     ; increment ms-snake length
     grown=grown+1
@@ -622,6 +626,8 @@ _SkipGameOverReset
   */
 
     bank 4
+
+    temp1 = temp1
 
     asm
     include "titlescreen/asm/titlescreen.asm"

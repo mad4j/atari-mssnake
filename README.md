@@ -8,6 +8,6 @@ Follow the discussion thread regarding **Ms Snake!** on [AtariAge](http://ataria
 
 [Play online!!!](http://mad4j.github.io/atari-mssnake/)
 
-![Cover](https://github.com/mad4j/atari-mssnake/blob/master/art/cover/643021588-main-with-logo.jpg?raw=true)
+![Cover](https://github.com/mad4j/atari-mssnake/blob/master/art/cover/643021588-main-with-logo-small.jpg?raw=true)
 
 
